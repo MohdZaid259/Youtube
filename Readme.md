@@ -2,8 +2,6 @@
 
 1) file setup, dependencies, libraries
 
-//mongoose-aggregate-paginate-v2 for aggregation queries
-//bcrypt for hashing password
-//jsonwebtoken
-// pre-middleware-to do something before execution
-//jwt is a bearer token
+// cloudinary is a service to store media files
+// multer uploads files to cloudinary
+// here we'll upload files to localserver with multer, then cloudinary picks from local to its server
