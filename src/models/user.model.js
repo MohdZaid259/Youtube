@@ -56,19 +56,19 @@ const userSchema = new Schema(
   },{timestamps:true})
 
 userSchema.pre('save', async function(next){
-  if (!this.isModified('password')) return next()
+  if (!this.isModified('password')) return next() // to encrypt password only when password field is updated 
   this.password = await bcrypt.hash(this.password,10)
-  next()
+  next() // we've to use next flag to pass the control as we are using 'pre' middleware 
 })
 
 userSchema.methods.isPasswordCorrect = async function(password){
   return await bcrypt.compare(password,this.password)
-}
+} // here we're creating a custom method 'isPasswordCorrect' using the keyword 'methods'
 
 userSchema.methods.generateAccessToken = function(){
   return jsonwebtoken.sign(
     {
-      _id:this._id,
+      _id:this._id, // this._id & all right side data are coming from mongoDB
       email:this.email,
       username:this.username,
       fullname:this.fullname

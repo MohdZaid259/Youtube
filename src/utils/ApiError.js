@@ -1,7 +1,7 @@
 class ApiError extends Error {
   
   constructor(statusCode,message='Something went wrong!!',errors=[],stack=''){
-    super(message)
+    super(message) // 'super' is called to overwrite
     this.statusCode=statusCode
     this.data=null
     this.message=message
