@@ -36,7 +36,20 @@
 
 6> routes
 . configured router
-. created a basic responding func 'registerUser' in controller
+. wrote registerUser in user.controller
 . wrote a get request in app.js & redirected to router
 . redirected to registerUser if user wants to register
 . checked on postman if we're getting the response or not
+. setup & configure postman app 
+
+7> Access-Refresh Tokens
+. wrote loginUser in user.controller (sent cookies & tokens)
+. wrote logoutUser in user.controller (cleared cookies & tokens)
+. needed to write auth.middleware for logout
+. wrote routes for login/logout in user.route
+
+8> RefreshToken Endpoint
+. wrote Endpoint in user.controller (to generate new Tokens)
+. wrote its route in user.route
+
+9> 
