@@ -52,4 +52,10 @@
 . wrote Endpoint in user.controller (to generate new Tokens)
 . wrote its route in user.route
 
-9> 
+9> Controllers
+. wrote updation functions in user.controller.js like changePassword,getUser,updateAccount,updateAvatar/CoverImage,getChannel,getWatchHistory
+. added respective routes in user.routes.js
+
+10> Pipelines
+. wrote aggregation pipelines to use databases
+. wrote subscription model 
