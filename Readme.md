@@ -38,3 +38,10 @@ user.controller/ wrote loginUser fn & generateTokens to provide both the tokens
 user.controller/ wrote logoutUser fn & auth.middleware for securing routes and getting 'user' in req
 user.controller/ wrote refreshAccessToken
 user.route/ updated by adding the endpoints
+user.controller/ wrote changePassword
+user.controller/ wrote currentUser
+user.controller/ wrote updateAccount
+user.controller/ wrote updateAvatar
+user.controller/ wrote updateCoverImage
+user.route/ updated by adding the endpoints
+worte subscription.model.js
