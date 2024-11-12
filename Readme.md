@@ -21,7 +21,7 @@ npm i cookie-parser cors
 create asyncHandler for future utility
 wrote ApiError & ApiResponse in utils for standard response everytime
 wrote user-video.model.js 
-npm i mongoose-aggregate-paginate-v2 to write pipelines
+npm i mongoose-aggregate-paginate-v2 to for pagination
 npm i bcrypt to validate encrypted passwords
 npm i jwt for tokens
 wrote 'pre' middleware in user.model.js to encrypt password whenever it's updated
@@ -33,9 +33,9 @@ multer - picks files & puts into localServer
 cloudinary - picks file from localServer & puts into cloudinary
 code for cloudinary for file upload to cloudinary
 code for multer for file upload to localServer
-user.controller/ wrote registerUser fn 
-user.controller/ wrote loginUser fn & generateTokens to provide both the tokens
-user.controller/ wrote logoutUser fn & auth.middleware for securing routes and getting 'user' in req
+user.controller/ wrote registerUser
+user.controller/ wrote loginUser & generateTokens to provide both the tokens
+user.controller/ wrote logoutUser & auth.middleware for securing routes and getting 'user' in req
 user.controller/ wrote refreshAccessToken
 user.route/ updated by adding the endpoints
 user.controller/ wrote changePassword
@@ -45,3 +45,6 @@ user.controller/ wrote updateAvatar
 user.controller/ wrote updateCoverImage
 user.route/ updated by adding the endpoints
 worte subscription.model.js
+user.controller/ wrote monogdbAggregationPipelines for getChannelProfile & getWatchHistory
+wrote comment-like-playlist.model.js 
+video.controller/ wrote uploadVideo
