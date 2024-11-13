@@ -2,6 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { Video } from '../models/video.model.js'
+import { isValidObjectId } from "mongoose";
 import { uploadOnCloudinary,deleteFromCloudinary } from "../utils/cloudinary.js";
 
 const uploadVideo = asyncHandler( async(req,res) => {
@@ -65,7 +66,7 @@ const deleteVideo = asyncHandler( async(req,res) => {
 
   const { videoId } = req.params
 
-  if(!videoId){
+  if(!isValidObjectId(videoId)){
     throw new ApiError(401,"Invalid videoId!")
   }
 
@@ -92,28 +93,13 @@ const deleteVideo = asyncHandler( async(req,res) => {
 const updateVideo = asyncHandler( async(req,res) => {
   const { videoId } = req.params
   const { title,description,isPublished } = req.body
-  
-  if(!videoId){
-    throw new ApiError(401,"Invalid videoId!")
-  }
-
-  if(
-    [title,description].some((item)=>item.trim()==='')
-  ){
-    throw new ApiError(400,'All fields are required!')
-  }
-
   const thumbnailLocalPath = req.file?.path
-
-  if(!thumbnailLocalPath){
-    throw new ApiError(400,'Thumbnail not found!')
-  }
 
   const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
 // delete old thumbnail
   const video = await Video.findById(videoId)
 
-  if(!video){
+  if(!isValidObjectId(video)){
     throw new ApiError(404,"Video not found!")
   }
 
@@ -139,8 +125,22 @@ const updateVideo = asyncHandler( async(req,res) => {
   )
 })
 
-const getVideoById = asyncHandler( async(req,res) => {
+const getVideoDetails = asyncHandler( async(req,res) => {
   const { videoId } = req.params
+
+  if(!isValidObjectId(videoId)){
+    throw new ApiError(401,"Invalid videoId!")
+  }
+
+  const video = await Video.findById(videoId)
+
+  if(!video){
+    throw new ApiError(404,'Video not found!')
+  }
+
+  return res.status(201).json(
+    new ApiResponse(201, video, 'video fetched successfully!')
+  )
 })
 
 const getAllVideos = asyncHandler( async(req,res) => {
@@ -150,6 +150,34 @@ const getAllVideos = asyncHandler( async(req,res) => {
 
 const togglePublish = asyncHandler( async(req,res) => {
   const { videoId } = req.params
+
+  if(!isValidObjectId(videoId)){
+    throw new ApiError(401,"Invalid videoId!")
+  }
+
+  const video = await Video.findById(videoId)
+
+  if(!video){
+    throw new ApiError(404,"Video not found!")
+  }
+
+  const toggleStatus = await Video.findByIdAndUpdate(
+    videoId,
+    {
+      $set:{
+        isPublished:!video.isPublished
+      }
+    },
+    {new:true}
+  )
+
+  if(!toggleStatus){
+    throw new ApiError(404,"Couldn't toggle!")
+  }
+
+  res.status(200).json(
+    new ApiResponse(200,toggleStatus,'Toggle done!')
+  )
 })
 
-export {uploadVideo, deleteVideo, updateVideo, getVideoById, getAllVideos, togglePublish}
+export {uploadVideo, deleteVideo, updateVideo, getVideoDetails, getAllVideos, togglePublish}
