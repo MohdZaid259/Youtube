@@ -1,1 +1,2 @@
 /userController: write fns like forgetPassword, resetPassword
+/videoController: write fns like searchVideo, getTrendingVideos

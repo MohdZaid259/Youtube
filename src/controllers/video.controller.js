@@ -2,6 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { Video } from '../models/video.model.js'
+import { uploadOnCloudinary,deleteFromCloudinary } from "../utils/cloudinary.js";
 
 const uploadVideo = asyncHandler( async(req,res) => {
   // get video details
@@ -34,47 +35,121 @@ const uploadVideo = asyncHandler( async(req,res) => {
   }
 
   const video = await Video.create({
-    videoFile,
-    thumbnail,
+    videoFile:videoFile.url,
+    thumbnail:thumbnail.url,
     title,
     description,
-    // duration
-    // views
-    // isPublished
-    // owner
+    duration:videoFile.duration,
+    views,
+    isPublished,
+    owner:req.user?._id
   })
 
+  const createdVideo = await Video.findById(video?._id)
+
+  if(!createdVideo){
+    throw new ApiError(400,'Something went wrong while uploading video!')
+  }
+
   return res.status(201).json(
-    new ApiResponse(201,video,'Video Uploaded Successfully!')
+      new ApiResponse(201, createdVideo, 'Video Uploaded Successfully!')
   )
 })
 
 const deleteVideo = asyncHandler( async(req,res) => {
+  // fetch video
+  // check if there's a video to delete
+  // delete it
+  // delete from cloundStorage
+  // return response
 
+  const { videoId } = req.params
+
+  if(!videoId){
+    throw new ApiError(401,"Invalid videoId!")
+  }
+
+  const video = await Video.findById(videoId)
+
+  if(!video){
+    throw new ApiError(404,"video not found!")
+  }
+
+  const isDeleted = await Video.findByIdAndDelete(videoId)
+
+  if(!isDeleted){
+    throw new ApiError(401,"video couldn't be deleted!")
+  }
+
+  await deleteFromCloudinary(video.videoFile)
+  await deleteFromCloudinary(video.thumbnail)
+
+  return res.status(201).json(
+    new ApiResponse(201,'video deleted successfully!')
+  )
 })
 
 const updateVideo = asyncHandler( async(req,res) => {
-  // (req.params)
-})
+  const { videoId } = req.params
+  const { title,description,isPublished } = req.body
+  
+  if(!videoId){
+    throw new ApiError(401,"Invalid videoId!")
+  }
 
-const searchVideo = asyncHandler( async(req,res) => {
+  if(
+    [title,description].some((item)=>item.trim()==='')
+  ){
+    throw new ApiError(400,'All fields are required!')
+  }
 
+  const thumbnailLocalPath = req.file?.path
+
+  if(!thumbnailLocalPath){
+    throw new ApiError(400,'Thumbnail not found!')
+  }
+
+  const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
+// delete old thumbnail
+  const video = await Video.findById(videoId)
+
+  if(!video){
+    throw new ApiError(404,"Video not found!")
+  }
+
+  const updatedVideo = await Video.findByIdAndUpdate(
+    videoId,
+    {
+      $set:{
+        title,
+        description,
+        thumbnail:thumbnail.url,
+        isPublished
+      }
+    },
+    {new:true}
+  )
+
+  if(!updatedVideo){
+    throw new ApiError(400,"Video couldn't be updated")
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200,updatedVideo,'Video updated successfully!')
+  )
 })
 
 const getVideoById = asyncHandler( async(req,res) => {
-  // (req.params)
+  const { videoId } = req.params
 })
 
 const getAllVideos = asyncHandler( async(req,res) => {
+  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
   // based on query, sort, pagination (req.query)
 })
 
-const getTrendingVideos = asyncHandler( async(req,res) => {
-
-})
-
 const togglePublish = asyncHandler( async(req,res) => {
-
+  const { videoId } = req.params
 })
 
-export {uploadVideo, deleteVideo, updateVideo, searchVideo, getVideoById, getAllVideos, getTrendingVideos, togglePublish}
+export {uploadVideo, deleteVideo, updateVideo, getVideoById, getAllVideos, togglePublish}

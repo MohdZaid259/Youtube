@@ -24,4 +24,8 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 }
 
-export {uploadOnCloudinary}
+const deleteFromCloudinary= () => {
+
+}
+
+export {uploadOnCloudinary,deleteFromCloudinary}

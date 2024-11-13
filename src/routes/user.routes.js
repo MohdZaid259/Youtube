@@ -6,7 +6,7 @@ import { verifyJWT } from '../middlewares/auth.middleware.js'
 const userRouter = Router()
 
 userRouter.route('/register').post(
-  upload.fields([ // middleware
+  upload.fields([
     {
       name:'avatar',
       maxCount:1
