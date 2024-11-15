@@ -15,24 +15,14 @@ const uploadVideo = asyncHandler( async(req,res) => {
 
   const {title, description, views, isPublished} = req.body
 
-  if(
-    [title,description].some((item)=>item.trim()==='')
-  ){
-    throw new ApiError(400,'All fields are required!')
-  }
-
   const videoFileLocalPath = req.files?.videoFile[0]?.path
   const thumbnailLocalPath = req.files?.thumbnail[0]?.path
-
-  if(!videoFileLocalPath || !thumbnailLocalPath){
-    throw new ApiError(400,'VideoFile & thumbnail are required!')
-  }
 
   const videoFile = await uploadOnCloudinary(videoFileLocalPath)
   const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
 
-  if(!videoFile || !thumbnail){
-    throw new ApiError(400,'Something went wrong while uploading avatar!')
+  if(!videoFile){
+    throw new ApiError(400,'Something went wrong while uploading video!')
   }
 
   const videoData = {
@@ -98,7 +88,7 @@ const updateVideo = asyncHandler( async(req,res) => {
   const thumbnailLocalPath = req.file?.path
 
   const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
-// delete old thumbnail
+  // delete old thumbnail
   const video = await videoService.findVideoById(videoId)
 
   if(!video){

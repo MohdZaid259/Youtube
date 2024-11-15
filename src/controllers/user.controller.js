@@ -36,12 +36,6 @@ const registerUser = asyncHandler( async(req,res) => {
   
   const {fullname, username, password, email} = req.body
 
-  if( // validation extraction
-    [fullname, username, password, email].some((item)=>item.trim()==='')
-  ){
-    throw new ApiError(400,'All fields are required!')
-  }
-
   const existedUser = await userService.findOneUser({ // what if find
     $or: [{username},{email}]
   })
@@ -96,10 +90,6 @@ const loginUser = asyncHandler( async(req,res) => {
   // return response
 
   const {username,email,password} = req.body
-
-  if(!username && !email){ // validation on password needed?
-    throw new ApiError(400,'Username or email is required!')
-  }
 
   const user = await userService.findOneUser({
     $or:[{username},{email}]
@@ -235,10 +225,6 @@ const currentUser = asyncHandler( async(req,res) => {
 const updateAccount = asyncHandler( async(req,res) => {
   const {fullname,email} = req.body
 
-  if(!fullname && !email){
-    throw new ApiError(401,'Nothing to update with!')
-  }
-
   const user = await userService.updateUserById(
     req.user?._id,
     {
@@ -256,10 +242,6 @@ const updateAccount = asyncHandler( async(req,res) => {
 const updateAvatar = asyncHandler( async(req,res) => {
   const avatarLocalPath = req.file?.path
 
-  if(!avatarLocalPath){
-    throw new ApiError(400,'Avatar not found!')
-  }
-
   const avatar = await uploadOnCloudinary(avatarLocalPath)
 
   if(!avatar){
@@ -275,7 +257,7 @@ const updateAvatar = asyncHandler( async(req,res) => {
     },
     {new:true}
   ).select('-password -refreshToken')
-// delete previous image
+  // delete previous image
   return res.status(200)
             .json(
               new ApiResponse(200,user,'Avatar updated successfully!')
@@ -284,10 +266,6 @@ const updateAvatar = asyncHandler( async(req,res) => {
 
 const updateCoverImage = asyncHandler( async(req,res) => {
   const coverImageLocalPath = req.file?.path
-
-  if(!coverImageLocalPath){
-    throw new ApiError(400,'coverImage not found!')
-  }
 
   const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
@@ -304,7 +282,7 @@ const updateCoverImage = asyncHandler( async(req,res) => {
     },
     {new:true}
   ).select('-password -refreshToken')
-// delete previous image
+  // delete previous image
 
   return res.status(200)
             .json(

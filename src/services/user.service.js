@@ -16,6 +16,4 @@ const updateUserById = async(userId,updateData,options={}) => {
   return await User.findByIdAndUpdate(userId,updateData,{new:true,...options})
 }
 
-const userService = {createUser, findUserById, findOneUser, updateUserById}
-
-export default userService
+export default {createUser, findUserById, findOneUser, updateUserById}

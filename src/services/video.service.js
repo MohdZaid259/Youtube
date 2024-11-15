@@ -16,6 +16,4 @@ const deleteVideoById = async(videoId) => {
   return await Video.findByIdAndDelete(videoId)
 }
 
-const videoService = {createVideo, findVideoById, updateVideoById,deleteVideoById}
-
-export default videoService
+export default videoService = {createVideo, findVideoById, updateVideoById,deleteVideoById}

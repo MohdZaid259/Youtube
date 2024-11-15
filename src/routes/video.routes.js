@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { deleteVideo, getVideoDetails, updateVideo, uploadVideo } from '../controllers/video.controller.js'
 import { verifyJWT } from '../middlewares/auth.middleware.js'
 import { upload } from '../middlewares/multer.middleware.js'
-import { videoValidator } from '../middlewares/videoValidator.middleware.js'
+import { videoDataValidation,videoIdValidation,videoFileValidation } from '../middlewares/validatation.middleware.js'
 
 const videoRouter = Router()
 
@@ -19,11 +19,13 @@ videoRouter.route('/upload-video').post(
       maxCount:1
     }
   ]),
+  videoDataValidation,
+  videoFileValidation,
   uploadVideo
 )
 videoRouter.route('/:videoId')
-          .delete(deleteVideo)
-          .patch(upload.single('thumbnail'),videoValidator,updateVideo)
-          .get(getVideoDetails)
+          .delete(videoIdValidation,deleteVideo)
+          .patch(upload.single('thumbnail'),videoDataValidation,videoIdValidation,videoFileValidation,updateVideo)
+          .get(videoIdValidation,getVideoDetails)
 
 export default videoRouter

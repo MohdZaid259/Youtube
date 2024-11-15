@@ -11,21 +11,23 @@ const uploadOnCloudinary = async (localFilePath) => {
   try{
     if(!localFilePath){
       throw new Error('localFilePath not found')
-      return null
     } 
     const response = await cloudinary.uploader.upload(localFilePath,{resource_type:'auto'})
     // fs.unlinkSync(localFilePath) 
     return response
-    
   }catch(err){
     console.log(err)
-    fs.unlinkSync(localFilePath) // removes locally saved file if err happens
+    fs.unlinkSync(localFilePath)
     return null
   }
 }
 
-const deleteFromCloudinary= () => {
-
+const deleteFromCloudinary = async () => {
+  try {
+    
+  } catch (err) {
+    
+  }
 }
 
 export {uploadOnCloudinary,deleteFromCloudinary}
