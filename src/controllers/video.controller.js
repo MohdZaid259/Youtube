@@ -1,9 +1,9 @@
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js"
-import { Video } from '../models/video.model.js'
 import { isValidObjectId } from "mongoose";
 import { uploadOnCloudinary,deleteFromCloudinary } from "../utils/cloudinary.js";
+import videoService from '../services/video.service.js'
 
 const uploadVideo = asyncHandler( async(req,res) => {
   // get video details
@@ -35,7 +35,7 @@ const uploadVideo = asyncHandler( async(req,res) => {
     throw new ApiError(400,'Something went wrong while uploading avatar!')
   }
 
-  const video = await Video.create({
+  const videoData = {
     videoFile:videoFile.url,
     thumbnail:thumbnail.url,
     title,
@@ -44,9 +44,11 @@ const uploadVideo = asyncHandler( async(req,res) => {
     views,
     isPublished,
     owner:req.user?._id
-  })
+  }
 
-  const createdVideo = await Video.findById(video?._id)
+  const video = await videoService.createVideo(videoData)
+
+  const createdVideo = await videoService.findVideoById(video?._id)
 
   if(!createdVideo){
     throw new ApiError(400,'Something went wrong while uploading video!')
@@ -70,13 +72,13 @@ const deleteVideo = asyncHandler( async(req,res) => {
     throw new ApiError(401,"Invalid videoId!")
   }
 
-  const video = await Video.findById(videoId)
+  const video = await videoService.findVideoById(videoId)
 
   if(!video){
     throw new ApiError(404,"video not found!")
   }
 
-  const isDeleted = await Video.findByIdAndDelete(videoId)
+  const isDeleted = await videoService.deleteVideoById(videoId)
 
   if(!isDeleted){
     throw new ApiError(401,"video couldn't be deleted!")
@@ -86,7 +88,7 @@ const deleteVideo = asyncHandler( async(req,res) => {
   await deleteFromCloudinary(video.thumbnail)
 
   return res.status(201).json(
-    new ApiResponse(201,'video deleted successfully!')
+    new ApiResponse(201,{},'video deleted successfully!')
   )
 })
 
@@ -97,13 +99,13 @@ const updateVideo = asyncHandler( async(req,res) => {
 
   const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
 // delete old thumbnail
-  const video = await Video.findById(videoId)
+  const video = await videoService.findVideoById(videoId)
 
-  if(!isValidObjectId(video)){
+  if(!video){
     throw new ApiError(404,"Video not found!")
   }
 
-  const updatedVideo = await Video.findByIdAndUpdate(
+  const updatedVideo = await videoService.updateVideoById(
     videoId,
     {
       $set:{
@@ -112,8 +114,7 @@ const updateVideo = asyncHandler( async(req,res) => {
         thumbnail:thumbnail.url,
         isPublished
       }
-    },
-    {new:true}
+    }
   )
 
   if(!updatedVideo){
@@ -132,7 +133,7 @@ const getVideoDetails = asyncHandler( async(req,res) => {
     throw new ApiError(401,"Invalid videoId!")
   }
 
-  const video = await Video.findById(videoId)
+  const video = await videoService.findVideoById(videoId)
 
   if(!video){
     throw new ApiError(404,'Video not found!')
@@ -155,20 +156,19 @@ const togglePublish = asyncHandler( async(req,res) => {
     throw new ApiError(401,"Invalid videoId!")
   }
 
-  const video = await Video.findById(videoId)
+  const video = await videoService.findVideoById(videoId)
 
   if(!video){
     throw new ApiError(404,"Video not found!")
   }
 
-  const toggleStatus = await Video.findByIdAndUpdate(
+  const toggleStatus = await videoService.updateVideoById(
     videoId,
     {
       $set:{
         isPublished:!video.isPublished
       }
-    },
-    {new:true}
+    }
   )
 
   if(!toggleStatus){

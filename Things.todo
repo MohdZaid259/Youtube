@@ -1,2 +1,3 @@
 /userController: write fns like forgetPassword, resetPassword
 /videoController: write fns like searchVideo, getTrendingVideos
+/commentController: write fns like likeComment

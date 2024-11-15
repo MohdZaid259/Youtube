@@ -1,3 +1,5 @@
+import { isValidObjectId } from 'mongoose' 
+
 const videoValidator = (req,_,next) => {
   const { videoId } = req.params
   const { title,description } = req.body
@@ -8,7 +10,7 @@ const videoValidator = (req,_,next) => {
     throw new ApiError(400,'All fields are required!')
   }
 
-  if(!videoId){
+  if(!isValidObjectId(videoId)){
     throw new ApiError(401,"Invalid videoId!")
   }
 
