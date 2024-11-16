@@ -51,8 +51,8 @@ const registerUser = asyncHandler( async(req,res) => {
     throw new ApiError(400,'Avatar is required!')
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath)
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+  const avatar = await userService.uploadAvatar(avatarLocalPath)
+  const coverImage = await userService.uploadCoverImage(coverImageLocalPath)
 
   if(!avatar){
     throw new ApiError(400,"Something went wrong while uploading avatar!")
@@ -242,7 +242,7 @@ const updateAccount = asyncHandler( async(req,res) => {
 const updateAvatar = asyncHandler( async(req,res) => {
   const avatarLocalPath = req.file?.path
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath)
+  const avatar = await userService.uploadAvatar(avatarLocalPath)
 
   if(!avatar){
     throw new ApiError(400,'Avatar upload failed!')
@@ -267,7 +267,7 @@ const updateAvatar = asyncHandler( async(req,res) => {
 const updateCoverImage = asyncHandler( async(req,res) => {
   const coverImageLocalPath = req.file?.path
 
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+  const coverImage = await userService.uploadCoverImage(coverImageLocalPath)
 
   if(!coverImage){
     throw new ApiError(400,'coverImage upload failed!')

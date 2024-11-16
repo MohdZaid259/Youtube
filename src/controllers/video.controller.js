@@ -18,8 +18,8 @@ const uploadVideo = asyncHandler( async(req,res) => {
   const videoFileLocalPath = req.files?.videoFile[0]?.path
   const thumbnailLocalPath = req.files?.thumbnail[0]?.path
 
-  const videoFile = await uploadOnCloudinary(videoFileLocalPath)
-  const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
+  const videoFile = await videoService.uploadVideoFile(videoFileLocalPath)
+  const thumbnail = await videoService.uploadThumbnail(thumbnailLocalPath)
 
   if(!videoFile){
     throw new ApiError(400,'Something went wrong while uploading video!')
@@ -74,8 +74,11 @@ const deleteVideo = asyncHandler( async(req,res) => {
     throw new ApiError(401,"video couldn't be deleted!")
   }
 
-  await deleteFromCloudinary(video.videoFile)
-  await deleteFromCloudinary(video.thumbnail)
+  const isFilesDeleted = await videoService.deleteVideoFiles(video.videoFile,video.thumbnail)
+
+  if(isFilesDeleted.some((item)=>item===false)){
+    throw new ApiError(401,"Video files couldn't be deleted!")
+  }
 
   return res.status(201).json(
     new ApiResponse(201,{},'video deleted successfully!')
@@ -87,7 +90,7 @@ const updateVideo = asyncHandler( async(req,res) => {
   const { title,description,isPublished } = req.body
   const thumbnailLocalPath = req.file?.path
 
-  const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
+  const thumbnail = await videoService.uploadThumbnail(thumbnailLocalPath)
   // delete old thumbnail
   const video = await videoService.findVideoById(videoId)
 

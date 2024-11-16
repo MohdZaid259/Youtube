@@ -80,4 +80,4 @@ const deleteComment = asyncHandler( async(req,res) => {
   )
 })
 
-export {getComment,addComment,editComment,deleteComment}
+export {getComment, addComment, editComment, deleteComment}

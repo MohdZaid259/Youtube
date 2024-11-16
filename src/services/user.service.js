@@ -16,4 +16,19 @@ const updateUserById = async(userId,updateData,options={}) => {
   return await User.findByIdAndUpdate(userId,updateData,{new:true,...options})
 }
 
-export default {createUser, findUserById, findOneUser, updateUserById}
+const uploadAvatar = async(avatarLocalPath) =>{
+  return await uploadOnCloudinary(avatarLocalPath)
+}
+
+const uploadCoverImage = async(coverImageLocalPath) =>{
+  return await uploadOnCloudinary(coverImageLocalPath)
+}
+
+const deleteUserFiles = async(avatar,coverImage) => {
+  const isAvatarDeleted = await deleteFromCloudinary(avatar)
+  const isCoverImageDeleted = await deleteFromCloudinary(coverImage)
+  
+  return [isAvatarDeleted,isCoverImageDeleted]
+}
+
+export default {createUser, findUserById, findOneUser, updateUserById, uploadAvatar, uploadCoverImage, deleteUserFiles}

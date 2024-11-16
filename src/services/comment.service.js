@@ -16,4 +16,4 @@ const deleteComment = async(commentId) =>{
   await Comment.findByIdAndDelete(commentId)
 }
 
-export default commentService = {createComment,editComment,deleteComment,findCommentById}
+export default commentService = {createComment, editComment, deleteComment, findCommentById}

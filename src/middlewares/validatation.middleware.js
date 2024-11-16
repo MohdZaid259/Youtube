@@ -98,4 +98,4 @@ const commentContentValidation = (req,res,next) => {
   next()
 }
 
-export { registerUserValidation,loginUserValidation,updateUserValidation,updateUserImages,videoDataValidation,videoIdValidation,videoFileValidation,commentIdValidation,commentContentValidation }
+export { registerUserValidation, loginUserValidation, updateUserValidation, updateUserImages, videoDataValidation, videoIdValidation, videoFileValidation, commentIdValidation, commentContentValidation }
