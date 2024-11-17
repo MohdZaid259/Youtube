@@ -2,7 +2,6 @@ import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiResponse } from "../utils/ApiResponse";
 import commentService from "../services/comment.service";
-import { isValidObjectId } from "mongoose";
 
 const getComment = asyncHandler( async(req,res) => {
 

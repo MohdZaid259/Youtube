@@ -1,6 +1,6 @@
 import { isValidObjectId } from 'mongoose' 
 
-const registerUserValidation = (req,_,next) => {
+const registerUser = (req,_,next) => {
   const {fullname, username, password, email} = req.body
 
   if(
@@ -12,7 +12,7 @@ const registerUserValidation = (req,_,next) => {
   next()
 }
 
-const loginUserValidation = (req,_,next) => {
+const loginUser= (req,_,next) => {
   const {username,email,password} = req.body
 
   if(
@@ -24,7 +24,7 @@ const loginUserValidation = (req,_,next) => {
   next()
 }
 
-const updateUserValidation = (req,_,next) => {
+const updateUser = (req,_,next) => {
   const {fullname,email} = req.body
 
   if(!fullname && !email){
@@ -46,7 +46,7 @@ const updateUserImages = (imageType) => {
   }
 }
 
-const videoDataValidation = (req,_,next) => {
+const videoData = (req,_,next) => {
   const { title,description } = req.body
 
   if(
@@ -58,7 +58,7 @@ const videoDataValidation = (req,_,next) => {
   next()
 }
 
-const videoIdValidation = (req,_,next) => {
+const videoId = (req,_,next) => {
   const { videoId } = req.params
 
   if(!isValidObjectId(videoId)){
@@ -68,7 +68,7 @@ const videoIdValidation = (req,_,next) => {
   next()
 }
 
-const videoFileValidation = (req,_,next) => {
+const videoFile = (req,_,next) => {
   const thumbnailLocalPath = req.file?.path
 
   if(!thumbnailLocalPath){
@@ -78,17 +78,17 @@ const videoFileValidation = (req,_,next) => {
   next()
 }
 
-const commentIdValidation = (req,res,next) => {
-  const {videoId} = req.params
+const commentId = (req,res,next) => {
+  const {commentId} = req.params
 
-  if(!isValidObjectId(videoId)){
-    throw new ApiError(401,'Invalid videoId!')
+  if(!isValidObjectId(commentId)){
+    throw new ApiError(401,'Invalid commentId!')
   }
 
   next()
 }
 
-const commentContentValidation = (req,res,next) => {
+const commentContent = (req,res,next) => {
   const {content} = req.body
 
   if(content.trim()===''){
@@ -98,4 +98,4 @@ const commentContentValidation = (req,res,next) => {
   next()
 }
 
-export { registerUserValidation, loginUserValidation, updateUserValidation, updateUserImages, videoDataValidation, videoIdValidation, videoFileValidation, commentIdValidation, commentContentValidation }
+export default { registerUser, loginUser, updateUser, updateUserImages, videoData, videoId, videoFile, commentId, commentContent }

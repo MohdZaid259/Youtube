@@ -1,12 +1,16 @@
 import { Router } from "express";
 import { addComment, deleteComment, editComment } from "../controllers/comment.controller";
 import { verifyJWT } from '../middlewares/auth.middleware.js'
-import { commentContentValidation,commentIdValidation } from '../middlewares/validation.middleware.js'
+import validation from '../middlewares/validation.middleware.js'
+
 const commentRouter = Router()
 
 commentRouter.use(verifyJWT)
 
-commentRouter.route('/:videoId').post(commentContentValidation,commentIdValidation,addComment)
-commentRouter.route('/channel/:commentId').patch(commentContentValidation,commentIdValidation,editComment).delete(commentIdValidation,deleteComment)
+commentRouter.route('/:videoId')
+            .post(validation.commentContent, validation.commentId, addComment)
+commentRouter.route('/channel/:commentId')
+              .patch(validation.commentContent, validation.commentId, editComment)
+              .delete(validation.commentId, deleteComment)
 
 export default commentRouter
