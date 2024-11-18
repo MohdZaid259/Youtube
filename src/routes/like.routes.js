@@ -7,7 +7,7 @@ const likeRouter = Router()
 
 likeRouter.use(verifyJWT)
 
-likeRouter.route('/:videoId').post(validation.videoId, toggleVideoLike)
-likeRouter.route('/:commentId').post(validation.commentId, toggleCommentLike)
+likeRouter.route('/toggle/video/:videoId').post(validation.videoId, toggleVideoLike)
+likeRouter.route('/toggle/comment/:commentId').post(validation.commentId, toggleCommentLike)
 
 export default likeRouter

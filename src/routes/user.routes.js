@@ -16,10 +16,10 @@ userRouter.route('/register').post(
       maxCount:1
     }
   ]),
-  registerUserValidation,
+  validation.registerUser,
   registerUser
 )
-userRouter.route('/login').post(loginUserValidation,loginUser)
+userRouter.route('/login').post(validation.loginUser,loginUser)
 
 //secured routes
 userRouter.route('/logout').post(verifyJWT, logoutUser)

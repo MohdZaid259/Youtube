@@ -1,4 +1,4 @@
-import { Video } from "../models/video.model";
+import { Video } from "../models/video.model.js";
 
 const createVideo = async(videoData) => {
   return await Video.create(videoData)
@@ -31,4 +31,4 @@ const deleteVideoFiles = async(videoFile,thumbnail) => {
   return [isVideoDeleted,isThumbnailDeleted]
 }
 
-export default videoService = {createVideo, findVideoById, updateVideoById, deleteVideoById, uploadVideoFile, uploadThumbnail, deleteVideoFiles}
+export default {createVideo, findVideoById, updateVideoById, deleteVideoById, uploadVideoFile, uploadThumbnail, deleteVideoFiles}

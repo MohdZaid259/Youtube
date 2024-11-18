@@ -8,7 +8,6 @@ const registerUser = (req,_,next) => {
   ){
     throw new ApiError(400,'All fields are required!')
   }
-
   next()
 }
 
@@ -20,7 +19,6 @@ const loginUser= (req,_,next) => {
   ){
     throw new ApiError(400,'All fields are required!')
   }
-
   next()
 }
 
@@ -30,7 +28,6 @@ const updateUser = (req,_,next) => {
   if(!fullname && !email){
     throw new ApiError(401,'Nothing to update with!')
   }
-
   next()
 }
 
@@ -41,7 +38,6 @@ const updateUserImages = (imageType) => {
     if(!imagePath){
       throw new ApiError(400,`${imageType} not found!`)
     }
-
     next()
   }
 }
@@ -54,7 +50,6 @@ const videoData = (req,_,next) => {
   ){
     throw new ApiError(400,'All fields are required!')
   }
-
   next()
 }
 
@@ -64,7 +59,6 @@ const videoId = (req,_,next) => {
   if(!isValidObjectId(videoId)){
     throw new ApiError(401,"Invalid videoId!")
   }
-
   next()
 }
 
@@ -74,28 +68,44 @@ const videoFile = (req,_,next) => {
   if(!thumbnailLocalPath){
     throw new ApiError(400,'Thumbnail not found!')
   }
-
   next()
 }
 
-const commentId = (req,res,next) => {
+const commentId = (req,_,next) => {
   const {commentId} = req.params
 
   if(!isValidObjectId(commentId)){
     throw new ApiError(401,'Invalid commentId!')
   }
-
   next()
 }
 
-const commentContent = (req,res,next) => {
+const commentContent = (req,_,next) => {
   const {content} = req.body
 
   if(content.trim()===''){
     throw new ApiError(401,'No content in comment!')
   }
-
   next()
 }
 
-export default { registerUser, loginUser, updateUser, updateUserImages, videoData, videoId, videoFile, commentId, commentContent }
+const playlistId = (req,_,next) => {
+  const {playlistId} = req.params
+
+  if(!isValidObjectId(playlistId)){
+    throw new ApiError(401,'Invalid playlistId!')
+  }
+  next()
+}
+
+
+const playlistData = (req,_,next) => {
+  const {name,description} = req.body
+
+  if([name,description].some(item=>item.trim==='')){
+    throw new ApiError(400,'All fields are required!')
+  }
+  next()
+}
+
+export default { registerUser, loginUser, updateUser, updateUserImages, videoData, videoId, videoFile, commentId, commentContent, playlistId, playlistData }

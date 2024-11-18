@@ -1,4 +1,4 @@
-import { Comment } from "../models/comment.model"
+import { Comment } from "../models/comment.model.js"
 
 const createComment = async(commentData) => {
   return await Comment.create(commentData)
@@ -16,4 +16,4 @@ const deleteComment = async(commentId) =>{
   await Comment.findByIdAndDelete(commentId)
 }
 
-export default commentService = {createComment, editComment, deleteComment, findCommentById}
+export default {createComment, editComment, deleteComment, findCommentById}

@@ -1,3 +1,4 @@
-/userController: write fns like forgetPassword, resetPassword
-/videoController: write fns like searchVideo, getTrendingVideos
-/commentController: write fns like likeComment
+/userController: forgetPassword, resetPassword
+/videoController: searchVideo, getTrendingVideos
+/commentController: likeComment
+/playlistController: getUserPlaylists, getPlaylistById

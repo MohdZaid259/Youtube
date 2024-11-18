@@ -1,4 +1,4 @@
-import { Like } from '../models/like.model'
+import { Like } from '../models/like.model.js'
 
 const findOne = async(data) => {
   return await Like.findOne(data)
