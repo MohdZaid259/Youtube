@@ -2,7 +2,6 @@ import { asyncHandler } from '../utils/asyncHandler.js'
 import {ApiError} from '../utils/ApiError.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 import { User } from '../models/user.model.js'
-import {uploadOnCloudinary} from '../utils/cloudinary.js'
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import userService from '../services/user.service.js'
@@ -46,7 +45,7 @@ const registerUser = asyncHandler( async(req,res) => {
 
   console.log(req.files)
   
-  const avatarLocalPath = req.file?.avatar[0]?.path
+  const avatarLocalPath = req.files?.avatar[0]?.path
   const coverImageLocalPath = req.files?.coverImage[0]?.path || null
   
   if(!avatarLocalPath){
@@ -225,7 +224,6 @@ const currentUser = asyncHandler( async(req,res) => {
 })
 
 const updateAccount = asyncHandler( async(req,res) => {
-  const {fullname,email} = req.body
 
   const user = await userService.updateUserById(
     req.user?._id,

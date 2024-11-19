@@ -8,8 +8,8 @@ const findById = async(playlistId) => {
   return await Playlist.findById(playlistId)
 }
 
-const findByIdAndUpdate = async(playlistId,playlistData) => {
-  return await Playlist.findByIdAndUpdate(playlistId,playlistData)
+const findByIdAndUpdate = async(playlistId,playlistData,options=[]) => {
+  return await Playlist.findByIdAndUpdate(playlistId,playlistData,{new:true,...options})
 }
 
 const findByIdAndDelete = async(playlistId) => {
