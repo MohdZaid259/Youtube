@@ -2,3 +2,6 @@
 /videoController: searchVideo, getTrendingVideos
 /commentController: likeComment
 /playlistController: getUserPlaylists, getPlaylistById
+
+create a dashboard to get channelStats & channelVideos
+write pipelines wherever left

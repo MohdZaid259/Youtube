@@ -25,26 +25,14 @@ npm i mongoose-aggregate-paginate-v2 to for pagination
 npm i bcrypt to validate encrypted passwords
 npm i jwt for tokens
 wrote 'pre' middleware in user.model.js to encrypt password whenever it's updated
-wrote a method 'isPasswordCorrect' to check password given is the same as stored in db
-wrote a method 'generateAccessToken' to create AccessToken
-wrote a method 'generateRefreshToken' to create RefreshToken
+wrote 'isPasswordCorrect' to check password given is the same as stored in db
+wrote'generateAccessToken' to create AccessToken
+wrote 'generateRefreshToken' to create RefreshToken
 npm i cloudinary multer
 multer - picks files & puts into localServer
 cloudinary - picks file from localServer & puts into cloudinary
 code for cloudinary for file upload to cloudinary
 code for multer for file upload to localServer
-user.controller/ wrote registerUser
-user.controller/ wrote loginUser & generateTokens to provide both the tokens
-user.controller/ wrote logoutUser & auth.middleware for securing routes and getting 'user' in req
-user.controller/ wrote refreshAccessToken
-user.route/ updated by adding the endpoints
-user.controller/ wrote changePassword
-user.controller/ wrote currentUser
-user.controller/ wrote updateAccount
-user.controller/ wrote updateAvatar
-user.controller/ wrote updateCoverImage
-user.route/ updated by adding the endpoints
-worte subscription.model.js
-user.controller/ wrote monogdbAggregationPipelines for getChannelProfile & getWatchHistory
-wrote comment-like-playlist.model.js 
-video.controller/ wrote uploadVideo
+wrote auth.middleware for securing routes and getting 'user' in req
+wrote all the controllers, services, middlewares, routes
+SOC :: frontend <-> route <-> controller <-> service <-> model <-> db

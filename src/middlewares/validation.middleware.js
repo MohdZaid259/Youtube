@@ -98,7 +98,6 @@ const playlistId = (req,_,next) => {
   next()
 }
 
-
 const playlistData = (req,_,next) => {
   const {name,description} = req.body
 
@@ -108,4 +107,12 @@ const playlistData = (req,_,next) => {
   next()
 }
 
-export default { registerUser, loginUser, updateUser, updateUserImages, videoData, videoId, videoFile, commentId, commentContent, playlistId, playlistData }
+const channelId = (req,_,next) => {
+  const {channelId} = req.params
+  
+  if(!isValidObjectId(channelId)){
+    throw new ApiError(401,'Invalid channelId!')
+  }
+  next()
+}
+export default { registerUser, loginUser, updateUser, updateUserImages, videoData, videoId, videoFile, commentId, commentContent, playlistId, playlistData, channelId }
