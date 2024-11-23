@@ -1,4 +1,5 @@
 import { User } from "../models/user.model.js";
+import { uploadOnCloudinary } from '../utils/cloudinary.js'
 
 const createUser = async(userData) => {
   return await User.create(userData)
