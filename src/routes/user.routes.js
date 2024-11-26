@@ -19,6 +19,7 @@ userRouter.route('/register').post(
   validation.registerUser,
   registerUser
 )
+
 userRouter.route('/login').post(validation.loginUser,loginUser)
 
 //secured routes

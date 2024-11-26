@@ -5,8 +5,12 @@ const createUser = async(userData) => {
   return await User.create(userData)
 }
 
-const findUserById = async(userId) => {
-  return await User.findById(userId)
+const findUserById = async(userId,remove=true) => {
+  if(remove){
+    return await User.findById(userId).select("-password -refreshToken")
+  }else{
+    return await User.findById(userId)
+  }
 }
 
 const findOneUser = async(data) => {

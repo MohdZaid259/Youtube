@@ -3,12 +3,11 @@ import {ApiError} from '../utils/ApiError.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 import { User } from '../models/user.model.js'
 import jwt from 'jsonwebtoken'
-import mongoose from 'mongoose'
 import userService from '../services/user.service.js'
 
 const generateAccessAndRefreshToken = async(userId) => {
   try {
-    const user = await userService.findUserById(userId) // 'user' is of MongoDB, 'User' is of mongoose
+    const user = await userService.findUserById(userId,false)
 
     const accessToken = user.generateAccessToken()
     const refreshToken = user.generateRefreshToken()
@@ -43,8 +42,6 @@ const registerUser = asyncHandler( async(req,res) => {
     throw new ApiError(400,'User with this username or email already exists!')
   }
 
-  // console.log(req)
-  
   const avatarLocalPath = req.files?.avatar[0]?.path
   const coverImageLocalPath = req.files?.coverImage[0]?.path || null
   
@@ -70,7 +67,7 @@ const registerUser = asyncHandler( async(req,res) => {
 
   const user = await userService.createUser(userData)
 
-  const createdUser = await userService.findUserById(user?._id).select("-password -refreshToken")
+  const createdUser = await userService.findUserById(user?._id,true)
 
   if(!createdUser){
     throw new ApiError(500,"Something went wrong while registration!")
@@ -96,11 +93,13 @@ const loginUser = asyncHandler( async(req,res) => {
     $or:[{username},{email}]
   })
 
+  // if accessToken, already loggedin
+  
   if(!user){
     throw new ApiError(400,"User doesn't exist!")  
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(password) // await bcz of db connection?
+  const isPasswordValid = await user.isPasswordCorrect(password)
 
   if(!isPasswordValid){
     throw new ApiError(400,"Invalid User Credentials!")  
@@ -108,7 +107,7 @@ const loginUser = asyncHandler( async(req,res) => {
 
   const {accessToken,refreshToken} = await generateAccessAndRefreshToken(user._id)
 
-  const loggedInUser = await userService.findUserById(user._id).select("-password -refreshToken")
+  const loggedInUser = await userService.findUserById(user._id)
 
   const options = {
     httpOnly:true,
@@ -167,9 +166,12 @@ const refreshAccessToken = asyncHandler( async(req,res) => {
     throw new ApiError(401,'Unauthorized request!')
   }
 
+  console.log(incomingRefreshToken)
+  console.log(process.env.REFRESH_TOKEN_SECRET)
+
   const decodedToken = jwt.verify(incomingRefreshToken,process.env.REFRESH_TOKEN_SECRET)
 
-  const user = await userService.findUserById(decodedToken?._id)
+  const user = await userService.findUserById(decodedToken?._id,false)
 
   if(!user){
     throw new ApiError(401,'Invalid refresh token')
@@ -200,7 +202,7 @@ const refreshAccessToken = asyncHandler( async(req,res) => {
 const changePassword = asyncHandler( async(req,res) => {  
   const {oldPassword,newPassword} = req.body
   
-  const user = await userService.findUserById(req.user?._id)
+  const user = await userService.findUserById(req.user?._id,false)
 
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
@@ -231,11 +233,17 @@ const updateAccount = asyncHandler( async(req,res) => {
       $set: req.body // updates only whose value present
     },
     { runValidators:true }
-  ).select('-password -refreshToken')
+  )
+
+  const fetchedUser = await userService.findUserById(user?._id)
+
+  if(!fetchedUser){
+    throw new ApiError(500,"Account couldn't be updated!")
+  }
 
   return res.status(200)
             .json(
-              new ApiResponse(200,user,'Account updated!')
+              new ApiResponse(200,fetchedUser,'Account updated!')
             )
 })
 
@@ -256,11 +264,18 @@ const updateAvatar = asyncHandler( async(req,res) => {
       }
     },
     {new:true}
-  ).select('-password -refreshToken')
+  )
+  
+  const fetchedUser = await userService.findUserById(user?._id)
+
+  if(!fetchedUser){
+    throw new ApiError(500,"Avatar couldn't be updated!")
+  }
+
   // delete previous image
   return res.status(200)
             .json(
-              new ApiResponse(200,user,'Avatar updated successfully!')
+              new ApiResponse(200,fetchedUser,'Avatar updated successfully!')
             )
 })
 
@@ -281,12 +296,18 @@ const updateCoverImage = asyncHandler( async(req,res) => {
       }
     },
     {new:true}
-  ).select('-password -refreshToken')
-  // delete previous image
+  )
 
+  const fetchedUser = await userService.findUserById(user?._id)
+
+  if(!fetchedUser){
+    throw new ApiError(500,"coverImage couldn't be updated!")
+  }
+
+  // delete previous image
   return res.status(200)
             .json(
-              new ApiResponse(200,user,'Cover Image updated successfully!')
+              new ApiResponse(200,fetchedUser,'Cover Image updated successfully!')
             )
 })
 
@@ -359,7 +380,7 @@ const getWatchHistory = asyncHandler ( async(req,res) => {
   const user = await User.aggregate([ // check what's in user
     {
       $match:{
-        _id: new mongoose.Types.ObjectId(req.user._id)
+        _id: req.user._id
       }
     },
     {
