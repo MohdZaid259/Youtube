@@ -256,26 +256,16 @@ const updateAvatar = asyncHandler( async(req,res) => {
     throw new ApiError(400,'Avatar upload failed!')
   }
 
-  const user = await userService.updateUserById(
-    req.user?._id,
-    {
-      $set:{
-        avatar:avatar.url
-      }
-    },
-    {new:true}
-  )
-  
-  const fetchedUser = await userService.findUserById(user?._id)
+  const user = await userService.findUserById(req.user?._id)
 
-  if(!fetchedUser){
-    throw new ApiError(500,"Avatar couldn't be updated!")
-  }
+  await userService.deleteAvatar(user.avatar)
 
-  // delete previous image
+  user.avatar = avatar.url
+  await user.save({validateBeforeSave:false})
+
   return res.status(200)
             .json(
-              new ApiResponse(200,fetchedUser,'Avatar updated successfully!')
+              new ApiResponse(200,avatar,'Avatar updated successfully!')
             )
 })
 
@@ -288,26 +278,16 @@ const updateCoverImage = asyncHandler( async(req,res) => {
     throw new ApiError(400,'coverImage upload failed!')
   }
 
-  const user = await userService.updateUserById(
-    req.user?._id,
-    {
-      $set:{
-        coverImage:coverImage.url
-      }
-    },
-    {new:true}
-  )
+  const user = await userService.findUserById(req.user?._id)
 
-  const fetchedUser = await userService.findUserById(user?._id)
+  await userService.deleteCoverImage(user.coverImage)
 
-  if(!fetchedUser){
-    throw new ApiError(500,"coverImage couldn't be updated!")
-  }
+  user.coverImage = coverImage.url
+  await user.save({validateBeforeSave:false})
 
-  // delete previous image
   return res.status(200)
             .json(
-              new ApiResponse(200,fetchedUser,'Cover Image updated successfully!')
+              new ApiResponse(200,coverImage,'Cover Image updated successfully!')
             )
 })
 
@@ -318,7 +298,7 @@ const getChannelProfile = asyncHandler( async(req,res) => {
     throw new ApiError(400,'username is missing!')
   }
 
-  const channel = await User.aggregate([ // check what's in channel 
+  const channel = await User.aggregate([ 
     {
       $match:{
         username:username.toLowerCase()

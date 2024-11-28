@@ -1,4 +1,5 @@
 import { Video } from "../models/video.model.js";
+import { uploadOnCloudinary,deleteFromCloudinary } from '../utils/cloudinary.js'
 
 const createVideo = async(videoData) => {
   return await Video.create(videoData)
@@ -24,11 +25,12 @@ const uploadThumbnail = async(thumbnailLocalPath) =>{
   return await uploadOnCloudinary(thumbnailLocalPath)
 }
 
-const deleteVideoFiles = async(videoFile,thumbnail) => {
-  const isVideoDeleted = await deleteFromCloudinary(videoFile)
-  const isThumbnailDeleted = await deleteFromCloudinary(thumbnail)
-  
-  return [isVideoDeleted,isThumbnailDeleted]
+const deleteVideoFile = async(videoUrl) => {
+  return await deleteFromCloudinary(videoUrl)
 }
 
-export default {createVideo, findVideoById, updateVideoById, deleteVideoById, uploadVideoFile, uploadThumbnail, deleteVideoFiles}
+const deleteThumbnail = async(thumbnailUrl) => {
+  return await deleteFromCloudinary(thumbnailUrl)
+}
+
+export default {createVideo, findVideoById, updateVideoById, deleteVideoById, uploadVideoFile, uploadThumbnail, deleteVideoFile, deleteThumbnail}

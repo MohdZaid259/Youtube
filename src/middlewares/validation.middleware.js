@@ -65,6 +65,15 @@ const videoId = (req,_,next) => {
 }
 
 const videoFile = (req,_,next) => {
+  const videoFileLocalPath = req.files?.videoFile[0]?.path
+
+  if(!videoFileLocalPath){
+    throw new ApiError(400,'Video not found!')
+  }
+  next()
+}
+
+const thumbnail = (req,_,next) => {
   const thumbnailLocalPath = req.file?.path
 
   if(!thumbnailLocalPath){
@@ -117,4 +126,4 @@ const channelId = (req,_,next) => {
   }
   next()
 }
-export default { registerUser, loginUser, updateUser, updateUserImages, videoData, videoId, videoFile, commentId, commentContent, playlistId, playlistData, channelId }
+export default { registerUser, loginUser, updateUser, updateUserImages, videoData, videoId, videoFile, thumbnail, commentId, commentContent, playlistId, playlistData, channelId }

@@ -2,7 +2,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { isValidObjectId } from "mongoose";
-import { uploadOnCloudinary,deleteFromCloudinary } from "../utils/cloudinary.js";
 import videoService from '../services/video.service.js'
 
 const uploadVideo = asyncHandler( async(req,res) => {
@@ -58,10 +57,6 @@ const deleteVideo = asyncHandler( async(req,res) => {
 
   const { videoId } = req.params
 
-  if(!isValidObjectId(videoId)){
-    throw new ApiError(401,"Invalid videoId!")
-  }
-
   const video = await videoService.findVideoById(videoId)
 
   if(!video){
@@ -74,11 +69,8 @@ const deleteVideo = asyncHandler( async(req,res) => {
     throw new ApiError(401,"video couldn't be deleted!")
   }
 
-  const isFilesDeleted = await videoService.deleteVideoFiles(video.videoFile,video.thumbnail)
-
-  if(isFilesDeleted.some((item)=>item===false)){
-    throw new ApiError(401,"Video files couldn't be deleted!")
-  }
+  await videoService.deleteVideoFile(video.videoFile)
+  await videoService.deleteThumbnail(video.thumbnail)
 
   return res.status(201).json(
     new ApiResponse(201,{},'video deleted successfully!')
@@ -90,14 +82,15 @@ const updateVideo = asyncHandler( async(req,res) => {
   const { title,description,isPublished } = req.body
   const thumbnailLocalPath = req.file?.path
 
-  const thumbnail = await videoService.uploadThumbnail(thumbnailLocalPath)
-  // delete old thumbnail
   const video = await videoService.findVideoById(videoId)
-
+  
   if(!video){
     throw new ApiError(404,"Video not found!")
   }
-
+  
+  const thumbnail = await videoService.uploadThumbnail(thumbnailLocalPath)
+  await videoService.deleteThumbnail(video.thumbnail)
+  
   const updatedVideo = await videoService.updateVideoById(
     videoId,
     {
@@ -109,7 +102,7 @@ const updateVideo = asyncHandler( async(req,res) => {
       }
     }
   )
-
+  
   if(!updatedVideo){
     throw new ApiError(400,"Video couldn't be updated")
   }

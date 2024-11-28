@@ -1,5 +1,5 @@
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from '../utils/cloudinary.js'
+import { uploadOnCloudinary,deleteFromCloudinary } from '../utils/cloudinary.js'
 
 const createUser = async(userData) => {
   return await User.create(userData)
@@ -29,11 +29,11 @@ const uploadCoverImage = async(coverImageLocalPath) =>{
   return await uploadOnCloudinary(coverImageLocalPath)
 }
 
-const deleteUserFiles = async(avatar,coverImage) => {
-  const isAvatarDeleted = await deleteFromCloudinary(avatar)
-  const isCoverImageDeleted = await deleteFromCloudinary(coverImage)
-  
-  return [isAvatarDeleted,isCoverImageDeleted]
+const deleteAvatar = async(avatarUrl) => {
+  return await deleteFromCloudinary(avatarUrl)
+}
+const deleteCoverImage = async(coverImageUrl) => {
+  return await deleteFromCloudinary(coverImageUrl)
 }
 
-export default {createUser, findUserById, findOneUser, updateUserById, uploadAvatar, uploadCoverImage, deleteUserFiles}
+export default {createUser, findUserById, findOneUser, updateUserById, uploadAvatar, uploadCoverImage, deleteAvatar, deleteCoverImage}
