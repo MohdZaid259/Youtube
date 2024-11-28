@@ -278,28 +278,6 @@ const updateAvatar = asyncHandler(async (req, res) => {
             )
 })
 
-const updateAvatar = asyncHandler( async(req,res) => {
-  const avatarLocalPath = req.file?.path
-
-  const avatar = await userService.uploadAvatar(avatarLocalPath)
-
-  if(!avatar){
-    throw new ApiError(400,'Avatar upload failed!')
-  }
-
-  const user = await userService.findUserById(req.user?._id)
-
-  await userService.deleteAvatar(user.avatar)
-
-  user.avatar = avatar.url
-  await user.save({validateBeforeSave:false})
-
-  return res.status(200)
-            .json(
-              new ApiResponse(200,avatar,'Avatar updated successfully!')
-            )
-})
-
 const updateCoverImage = asyncHandler( async(req,res) => {
   const coverImageLocalPath = req.file?.path
 
