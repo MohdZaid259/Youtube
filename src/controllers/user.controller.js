@@ -1,84 +1,85 @@
-import { asyncHandler } from '../utils/asyncHandler.js'
-import {ApiError} from '../utils/ApiError.js'
-import {ApiResponse} from '../utils/ApiResponse.js'
-import { User } from '../models/user.model.js'
-import jwt from 'jsonwebtoken'
-import userService from '../services/user.service.js'
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { User } from "../models/user.model.js";
+import jwt from "jsonwebtoken";
+import userService from "../services/user.service.js";
 
-const generateAccessAndRefreshToken = async(userId) => {
+const generateAccessAndRefreshToken = async (userId) => {
   try {
-    const user = await userService.findUserById(userId,false)
+    const user = await userService.findUserById(userId, false);
 
-    const accessToken = user.generateAccessToken()
-    const refreshToken = user.generateRefreshToken()
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
 
-    user.refreshToken = refreshToken
-    await user.save({validateBeforeSave: false})
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
 
-    return {accessToken,refreshToken}
+    return { accessToken, refreshToken };
   } catch (err) {
-    throw new ApiError(500,'Something went wrong while generating tokens!')
+    throw new ApiError(500, "Something went wrong while generating tokens!");
   }
-}
+};
 
-const registerUser = asyncHandler( async(req,res) => {
+const registerUser = asyncHandler(async (req, res) => {
   // get user details
   // validation - not empty
-  // check if already exists 
+  // check if already exists
   // check for avatar, coverImage
   // upload on cloudinary
   // create user object entry in db
   // remove password and refreshToken from response
   // check if user created
-  // return response 
-  
-  const {fullname, username, password, email} = req.body
+  // return response
 
-  const existedUser = await userService.findOneUser({ // what if find
-    $or: [{username},{email}]
-  })
+  const { fullname, username, password, email } = req.body;
 
-  if(existedUser){
-    throw new ApiError(400,'User with this username or email already exists!')
+  const existedUser = await userService.findOneUser({
+    // what if find
+    $or: [{ username }, { email }],
+  });
+
+  if (existedUser) {
+    throw new ApiError(400, "User with this username or email already exists!");
   }
 
-  const avatarLocalPath = req.files?.avatar[0]?.path
-  const coverImageLocalPath = req.files?.coverImage[0]?.path || null
-  
-  if(!avatarLocalPath){
-    throw new ApiError(400,'Avatar is required!')
+  const avatarLocalPath = req.files?.avatar[0]?.path;
+  const coverImageLocalPath = req.files?.coverImage[0]?.path || null;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar is required!");
   }
 
-  const avatar = await userService.uploadAvatar(avatarLocalPath)
-  const coverImage = await userService.uploadCoverImage(coverImageLocalPath)
+  const avatar = await userService.uploadAvatar(avatarLocalPath);
+  const coverImage = await userService.uploadCoverImage(coverImageLocalPath);
 
-  if(!avatar){
-    throw new ApiError(400,"Something went wrong while uploading avatar!")
+  if (!avatar) {
+    throw new ApiError(400, "Something went wrong while uploading avatar!");
   }
 
   const userData = {
     fullname,
-    avatar:avatar.url,
-    coverImage:coverImage?.url || '',
+    avatar: avatar.url,
+    coverImage: coverImage?.url || "",
     email,
     password,
-    username: username.toLowerCase()
+    username: username.toLowerCase(),
+  };
+
+  const user = await userService.createUser(userData);
+
+  const createdUser = await userService.findUserById(user?._id, true);
+
+  if (!createdUser) {
+    throw new ApiError(500, "Something went wrong while registration!");
   }
 
-  const user = await userService.createUser(userData)
+  return res
+    .status(201)
+    .json(new ApiResponse(201, createdUser, "User Registered Successfully!"));
+});
 
-  const createdUser = await userService.findUserById(user?._id,true)
-
-  if(!createdUser){
-    throw new ApiError(500,"Something went wrong while registration!")
-  }
-
-  return res.status(201).json(
-    new ApiResponse(201, createdUser, 'User Registered Successfully!')
-  )
-})
-
-const loginUser = asyncHandler( async(req,res) => {
+const loginUser = asyncHandler(async (req, res) => {
   // get user details
   // validate username | email
   // find user
@@ -87,72 +88,75 @@ const loginUser = asyncHandler( async(req,res) => {
   // set cookies
   // return response
 
-  const {username,email,password} = req.body
+  const { username, email, password } = req.body;
 
   const user = await userService.findOneUser({
-    $or:[{username},{email}]
-  })
+    $or: [{ username }, { email }],
+  });
 
   // if accessToken, already loggedin
-  
-  if(!user){
-    throw new ApiError(400,"User doesn't exist!")  
+
+  if (!user) {
+    throw new ApiError(400, "User doesn't exist!");
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(password)
+  const isPasswordValid = await user.isPasswordCorrect(password);
 
-  if(!isPasswordValid){
-    throw new ApiError(400,"Invalid User Credentials!")  
+  if (!isPasswordValid) {
+    throw new ApiError(400, "Invalid User Credentials!");
   }
 
-  const {accessToken,refreshToken} = await generateAccessAndRefreshToken(user._id)
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user._id
+  );
 
-  const loggedInUser = await userService.findUserById(user._id)
+  const loggedInUser = await userService.findUserById(user._id);
 
   const options = {
-    httpOnly:true,
-    secure: true
-  }
-  return res.status(200)
-            .cookie('accessToken',accessToken,options)
-            .cookie('refreshToken',refreshToken,options)
-            .json(
-              new ApiResponse(201,{
-                  user:loggedInUser,
-                  accessToken,
-                  refreshToken
-                },"User logged In successfully!"
-              )
-            )
-})
+    httpOnly: true,
+    secure: true,
+  };
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        201,
+        {
+          user: loggedInUser,
+          accessToken,
+          refreshToken,
+        },
+        "User logged In successfully!"
+      )
+    );
+});
 
-const logoutUser = asyncHandler( async(req,res) => {
+const logoutUser = asyncHandler(async (req, res) => {
   // get user from database - auth.middleware
   // remove refreshToken
   // clear cookies
 
-  await userService.updateUserById(
-    req.user._id,
-    {
-      $set:{ // check with unset
-        refreshToken:null // why undefined not works here
-      }
-    }
-  )
+  await userService.updateUserById(req.user._id, {
+    $set: {
+      // check with unset
+      refreshToken: null, // why undefined not works here
+    },
+  });
 
   const options = {
-    httpOnly:true,
-    secure:true
-  }
-  return res.status(200)
-            .clearCookie('accessToken',options)
-            .clearCookie('refreshToken',options)
-            .json(
-              new ApiResponse(200,{},'User logged out!')
-            )
-})
+    httpOnly: true,
+    secure: true,
+  };
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged out!"));
+});
 
-const refreshAccessToken = asyncHandler( async(req,res) => {
+const refreshAccessToken = asyncHandler(async (req, res) => {
   // get refreshToken
   // decode it
   // get user
@@ -160,86 +164,113 @@ const refreshAccessToken = asyncHandler( async(req,res) => {
   // generate new tokens
   // set cookie with new tokens
 
-  const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
 
-  if(!incomingRefreshToken){
-    throw new ApiError(401,'Unauthorized request!')
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, "Unauthorized request!");
   }
 
-  console.log(incomingRefreshToken)
-  console.log(process.env.REFRESH_TOKEN_SECRET)
-
-  const decodedToken = jwt.verify(incomingRefreshToken,process.env.REFRESH_TOKEN_SECRET)
-
-  const user = await userService.findUserById(decodedToken?._id,false)
-
-  if(!user){
-    throw new ApiError(401,'Invalid refresh token')
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+  } catch (err) {
+    throw new ApiError(401, "Invalid/Expired refresh token");
   }
 
-  if(incomingRefreshToken !== user?.refreshToken){
-    throw new ApiError(401,'Refresh token is expired')
+  const user = await userService.findUserById(decodedToken?._id, false);
+
+  if (!user) {
+    throw new ApiError(401, "Invalid refresh token");
   }
 
-  const {accessToken,newRefreshToken} = await generateAccessAndRefreshToken(user._id)
-
-  const options={
-    httpOnly:true,
-    secure:true
+  if (incomingRefreshToken !== user?.refreshToken) {
+    throw new ApiError(401, "Refresh token is expired");
   }
 
-  return res.status(200)
-            .cookie('accessToken',accessToken,options)
-            .cookie('refreshToken',newRefreshToken,options)
-            .json(
-              new ApiResponse(200,
-                {accessToken, refreshToken:newRefreshToken},
-                'AccessToken refreshed successfully!'
-              )
-            )
-})
+  const { accessToken, newRefreshToken } = await generateAccessAndRefreshToken(
+    user._id
+  );
 
-const changePassword = asyncHandler( async(req,res) => {  
-  const {oldPassword,newPassword} = req.body
-  
-  const user = await userService.findUserById(req.user?._id,false)
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
 
-  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", newRefreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { accessToken, refreshToken: newRefreshToken },
+        "AccessToken refreshed successfully!"
+      )
+    );
+});
 
-  if(!isPasswordCorrect){
-    throw new ApiError(400,'Unauthorized request!')
+const changePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await userService.findUserById(req.user?._id, false);
+
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Unauthorized request!");
   }
 
-  user.password = newPassword
-  await user.save({validateBeforeSave:false})
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
 
-  return res.status(200)
-            .json(
-              new ApiResponse(200,{},'password updated!')
-            )
-})
+  return res.status(200).json(new ApiResponse(200, {}, "password updated!"));
+});
 
-const currentUser = asyncHandler( async(req,res) => {
-  return res.status(200).json(
-    new ApiResponse(200,req.user,'current user fetched successfully!')
-  )
-})
+const currentUser = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "current user fetched successfully!"));
+});
 
-const updateAccount = asyncHandler( async(req,res) => {
-
+const updateAccount = asyncHandler(async (req, res) => {
   const user = await userService.updateUserById(
     req.user?._id,
     {
-      $set: req.body // updates only whose value present
+      $set: req.body, // updates only whose value present
     },
-    { runValidators:true }
-  )
+    { runValidators: true }
+  );
 
-  const fetchedUser = await userService.findUserById(user?._id)
+  const fetchedUser = await userService.findUserById(user?._id);
 
-  if(!fetchedUser){
-    throw new ApiError(500,"Account couldn't be updated!")
+  if (!fetchedUser) {
+    throw new ApiError(500, "Account couldn't be updated!");
   }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, fetchedUser, "Account updated!"));
+});
+
+const updateAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.path;
+
+  const avatar = await userService.uploadAvatar(avatarLocalPath);
+
+  if (!avatar) {
+    throw new ApiError(400, "Avatar upload failed!");
+  }
+
+  const user = await userService.findUserById(req.user?._id)
+
+  await userService.deleteAvatar(user.avatar)
+
+  user.avatar = avatar.url
+  await user.save({validateBeforeSave:false})
 
   return res.status(200)
             .json(
@@ -291,106 +322,128 @@ const updateCoverImage = asyncHandler( async(req,res) => {
             )
 })
 
-const getChannelProfile = asyncHandler( async(req,res) => {
-  const {username} = req.params
+const getChannelProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
 
-  if(!username?.trim()){
-    throw new ApiError(400,'username is missing!')
+  if (!username?.trim()) {
+    throw new ApiError(400, "username is missing!");
   }
 
   const channel = await User.aggregate([ 
     {
-      $match:{
-        username:username.toLowerCase()
-      }
-    },{
-      $lookup:{
-        from:'subscriptions',
-        localField:'_id',
-        foreignField:'channel',
-        as:'subscribers'
-      }
-    },{
-      $lookup:{
-        from:'subscriptions',
-        localField:'_id',
-        foreignField:'subscriber',
-        as:'subscribedTo'
-      }
-    },{
-      $addFields:{
-        subscribersCount:{
-          $size:'$subscribers'
-        },
-        subscribedToCount:{
-          $size:'$subscribedTo'
-        },
-        isSubscribed:{
-          $cond:{
-            if: {$in: [req.user?._id,'$subscribers.subscriber']},
-            then: true,
-            else: false
-          }
-        }
-      }
-    },{
-      $project:{
-        fullname:1,
-        username:1,
-        email:1,
-        avatar:1,
-        coverImage:1,
-        subscribersCount:1,
-        subscribedToCount:1,
-        isSubscribed:1
-      }
-    }
-  ])
-
-  if(!channel?.length){
-    throw new ApiError(400,"channel doesn't exist!")
-  }
-
-  return res.status(200).json(
-    new ApiResponse(200,channel[0],'channel fetched successfully!')
-  )
-})
-
-const getWatchHistory = asyncHandler ( async(req,res) => {
-  const user = await User.aggregate([ // check what's in user
-    {
-      $match:{
-        _id: req.user._id
-      }
+      $match: {
+        username: username.toLowerCase(),
+      },
     },
     {
-      $lookup:{
-        from:'videos',
-        localField:'watchHistory',
-        foreignField:'_id',
-        as:'watchHistory',
-        pipeline:[{
-          $lookup:{
-            from:'users',
-            localField:'owner',
-            foreignField:'_id',
-            as:'owner',
-            pipeline:[{ // do alter method
-              $project:{
-                fullname:1,
-                username:1,
-                avatar:1
-              }
-            }]
-          }
-        }]
-      }
-    }
-  ])
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "channel",
+        as: "subscribers",
+      },
+    },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "subscribedTo",
+      },
+    },
+    {
+      $addFields: {
+        subscribersCount: {
+          $size: "$subscribers",
+        },
+        subscribedToCount: {
+          $size: "$subscribedTo",
+        },
+        isSubscribed: {
+          $cond: {
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        fullname: 1,
+        username: 1,
+        email: 1,
+        avatar: 1,
+        coverImage: 1,
+        subscribersCount: 1,
+        subscribedToCount: 1,
+        isSubscribed: 1,
+      },
+    },
+  ]);
 
-  return res.status(200).json(
-    new ApiResponse(200,user,'watchHistory fetched!')
-  )
-})
+  if (!channel?.length) {
+    throw new ApiError(400, "channel doesn't exist!");
+  }
 
-export {registerUser, loginUser, logoutUser, refreshAccessToken, changePassword, currentUser, updateAccount, updateAvatar, updateCoverImage, getChannelProfile, getWatchHistory}
+  return res
+    .status(200)
+    .json(new ApiResponse(200, channel[0], "channel fetched successfully!"));
+});
+
+const getWatchHistory = asyncHandler(async (req, res) => {
+  const user = await User.aggregate([
+    // check what's in user
+    {
+      $match: {
+        _id: req.user._id,
+      },
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  // do alter method
+                  $project: {
+                    fullname: 1,
+                    username: 1,
+                    avatar: 1,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ]);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "watchHistory fetched!"));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  changePassword,
+  currentUser,
+  updateAccount,
+  updateAvatar,
+  updateCoverImage,
+  getChannelProfile,
+  getWatchHistory,
+};
