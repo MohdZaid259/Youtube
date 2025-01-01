@@ -27,6 +27,7 @@ videoRouter.route('/:videoId')
           .delete(validation.videoId,deleteVideo)
           .patch(upload.single('thumbnail'),validation.thumbnail,validation.videoId, updateVideo)
           .get(validation.videoId,getVideoDetails)
+          
 videoRouter.route('/toggle/:videoId').patch(validation.videoId,togglePublish)
 
 export default videoRouter

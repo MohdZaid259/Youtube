@@ -1,3 +1,5 @@
+import { Like } from "../models/like.model.js";
+import { Comment } from "../models/comment.model.js"
 import { Video } from "../models/video.model.js";
 import { uploadOnCloudinary,deleteFromCloudinary } from '../utils/cloudinary.js'
 
@@ -33,4 +35,12 @@ const deleteThumbnail = async(thumbnailUrl) => {
   return await deleteFromCloudinary(thumbnailUrl)
 }
 
-export default {createVideo, findVideoById, updateVideoById, deleteVideoById, uploadVideoFile, uploadThumbnail, deleteVideoFile, deleteThumbnail}
+const deleteLikes = async(videoId) => {
+  return await Like.deleteMany({video:videoId})
+}
+
+const deleteComments = async(videoId) => {
+  return await Comment.deleteMany({video:videoId})
+}
+
+export default {createVideo, findVideoById, updateVideoById, deleteVideoById, uploadVideoFile, uploadThumbnail, deleteVideoFile, deleteThumbnail, deleteLikes, deleteComments}

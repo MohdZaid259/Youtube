@@ -140,8 +140,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   await userService.updateUserById(req.user._id, {
     $set: {
-      // check with unset
-      refreshToken: null, // why undefined not works here
+      refreshToken: null,
     },
   });
 
@@ -240,7 +239,7 @@ const updateAccount = asyncHandler(async (req, res) => {
   const user = await userService.updateUserById(
     req.user?._id,
     {
-      $set: req.body, // updates only whose value present
+      $set: req.body,
     },
     { runValidators: true }
   );
@@ -298,6 +297,25 @@ const updateCoverImage = asyncHandler( async(req,res) => {
             .json(
               new ApiResponse(200,coverImage,'Cover Image updated successfully!')
             )
+})
+
+const updateWatchHistory = asyncHandler( async(req,res) => {
+  const {videoId} = req.params
+
+  const user = await userService.findUserById(req.user?._id)
+
+  if(!user){
+    throw new ApiError(401,'User not found!')
+  }
+
+  if( !(user.watchHistory).includes(videoId) ){
+    (user.watchHistory).push(videoId)
+    await user.save({validateBeforeSave:false})
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200,{},'Watch History updated!')
+  )
 })
 
 const getChannelProfile = asyncHandler(async (req, res) => {
@@ -370,42 +388,46 @@ const getChannelProfile = asyncHandler(async (req, res) => {
 });
 
 const getWatchHistory = asyncHandler(async (req, res) => {
+
   const user = await User.aggregate([
-    // check what's in user
     {
-      $match: {
-        _id: req.user._id,
-      },
+      $match:{
+        _id: req.user?._id
+      }
     },
     {
-      $lookup: {
-        from: "videos",
-        localField: "watchHistory",
-        foreignField: "_id",
-        as: "watchHistory",
-        pipeline: [
+      $lookup:{
+        from:'videos',
+        localField:'watchHistory',
+        foreignField:'_id',
+        as:'watchHistory',
+        pipeline:[
           {
-            $lookup: {
-              from: "users",
-              localField: "owner",
-              foreignField: "_id",
-              as: "owner",
-              pipeline: [
+            $lookup:{
+              from:'users',
+              localField:'owner',
+              foreignField:'_id',
+              as:'owner',
+              pipeline:[
                 {
-                  // do alter method
-                  $project: {
-                    fullname: 1,
-                    username: 1,
-                    avatar: 1,
-                  },
-                },
-              ],
-            },
+                  $project:{
+                    username:1
+                  }
+                }
+              ]
+            }
           },
-        ],
-      },
-    },
-  ]);
+          {
+            $addFields:{
+              owner:{
+                $arrayElemAt:['$owner',0]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ])
 
   return res
     .status(200)
@@ -422,6 +444,7 @@ export {
   updateAccount,
   updateAvatar,
   updateCoverImage,
+  updateWatchHistory,
   getChannelProfile,
   getWatchHistory,
 };

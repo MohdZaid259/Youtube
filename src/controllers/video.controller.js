@@ -72,6 +72,9 @@ const deleteVideo = asyncHandler( async(req,res) => {
   await videoService.deleteVideoFile(video.videoFile)
   await videoService.deleteThumbnail(video.thumbnail)
 
+  await videoService.deleteLikes(videoId)
+  await videoService.deleteComments(videoId)
+
   return res.status(201).json(
     new ApiResponse(201,{},'video deleted successfully!')
   )
@@ -133,6 +136,7 @@ const getVideoDetails = asyncHandler( async(req,res) => {
 const getAllVideos = asyncHandler( async(req,res) => {
   const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
   // based on query, sort, pagination (req.query)
+  
 })
 
 const togglePublish = asyncHandler( async(req,res) => {

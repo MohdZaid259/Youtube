@@ -7,4 +7,8 @@ const subscriptionRouter = Router()
 
 subscriptionRouter.use(verifyJWT)
 
-subscriptionRouter.route('/subscription/:channelId').post(validation.channelId,toggleSubscription)
+subscriptionRouter.route('/:channelId').post(validation.channelId,toggleSubscription)
+                                      .get(validation.channelId,getChannelSubscribers)
+                                      .get(validation.channelId,getSubscribedChannels)
+
+export default subscriptionRouter

@@ -9,7 +9,11 @@ const likeSchema = new Schema({
     type:Schema.Types.ObjectId,
     ref:'Comment'
   },
-  likedBy:{
+  reply:{
+    type:Schema.Types.ObjectId,
+    ref:'Reply'
+  },
+  owner:{
     type:Schema.Types.ObjectId,
     ref:'User'
   }

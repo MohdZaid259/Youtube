@@ -1,15 +1,15 @@
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
-import { ApiResponse } from "../utils/ApiResponse";
-import likeService from "../services/like.service";
-import { Like } from "../models/like.model";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import likeService from "../services/like.service.js";
+import { Like } from "../models/like.model.js";
 
 const toggleVideoLike = asyncHandler( async(req,res) => {
   const {videoId} = req.params
 
   const alreadyLiked = await likeService.findOne({ // log it
     video:videoId,
-    likedBy:req.user?._id
+    owner:req.user?._id
   })
 
   if(alreadyLiked){
@@ -22,7 +22,7 @@ const toggleVideoLike = asyncHandler( async(req,res) => {
 
   const likeVideo = await likeService.create({
     video:videoId,
-    likedBy:req.user?._id
+    owner:req.user?._id
   })
 
   if(!likeVideo){
@@ -39,7 +39,7 @@ const toggleCommentLike = asyncHandler( async(req,res) => {
 
   const alreadyLiked = await likeService.findOne({
     comment:commentId,
-    likedBy:req.user?._id
+    owner:req.user?._id
   })
 
   if(alreadyLiked){
@@ -52,7 +52,7 @@ const toggleCommentLike = asyncHandler( async(req,res) => {
 
   const likeComment = await likeService.create({
     comment:commentId,
-    likedBy:req.user?._id
+    owner:req.user?._id
   })
 
   if(!likeComment){
@@ -64,8 +64,57 @@ const toggleCommentLike = asyncHandler( async(req,res) => {
   )
 })
 
-const getLikedVideos = asyncHandler( async(req,res) => {
+const toggleReplyLike = asyncHandler( async(req,res) => {
+  const {replyId} = req.params
 
+  const alreadyLiked = await likeService.findOne({
+    reply:replyId,
+    owner:req.user?._id
+  })
+
+  if(alreadyLiked){
+    await likeService.findByIdAndDelete(alreadyLiked._id)
+
+    return res.status(200).json(
+      new ApiResponse(200,{},'Like removed from reply!')
+    )
+  }
+
+  const likedReply = await likeService.create({
+    reply:replyId,
+    owner:req.user?._id
+  })
+
+  if(!likedReply){
+    throw new ApiError(500,"Couldn't like reply!")
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200,likedReply,'reply liked!')
+  )
 })
 
-export {toggleVideoLike, toggleCommentLike, getLikedVideos}
+const getLikedVideos = asyncHandler( async(req,res) => {
+
+  const videos = await Like.aggregate([
+    {
+      $match:{
+        owner: req.user?._id
+      }
+    },
+    {
+      $group:{
+        _id:'$owner',
+        videos:{
+          $push:'$video'
+        }
+      }
+    }
+  ])
+
+  return res.status(200).json(
+    new ApiResponse(200,videos,'LikedVideos fetched Successfully!')
+  )
+})
+
+export {toggleVideoLike, toggleCommentLike, toggleReplyLike, getLikedVideos}

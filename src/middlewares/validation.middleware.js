@@ -65,6 +65,7 @@ const videoId = (req,_,next) => {
 }
 
 const videoFile = (req,_,next) => {
+  console.log(req)
   const videoFileLocalPath = req.files?.videoFile[0]?.path
 
   if(!videoFileLocalPath){
@@ -126,4 +127,14 @@ const channelId = (req,_,next) => {
   }
   next()
 }
-export default { registerUser, loginUser, updateUser, updateUserImages, videoData, videoId, videoFile, thumbnail, commentId, commentContent, playlistId, playlistData, channelId }
+
+const replyId = (req,_,next) => {
+  const {replyId} = req.params
+  
+  if(!isValidObjectId(replyId)){
+    throw new ApiError(401,'Invalid replyId!')
+  }
+  next()
+}
+
+export default { registerUser, loginUser, updateUser, updateUserImages, videoData, videoId, videoFile, thumbnail, commentId, commentContent, playlistId, playlistData, channelId, replyId }

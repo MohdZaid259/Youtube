@@ -19,7 +19,7 @@ const videoSchema = new Schema({
     required:true,
   },
   duration:{
-    type:String, // cloudinary url
+    type:String,
     required:true
   },
   views:{
@@ -33,7 +33,19 @@ const videoSchema = new Schema({
   owner:{
     type:Schema.Types.ObjectId,
     ref:'User'
-  }
+  },
+  likes:[
+    {
+      type:Schema.Types.ObjectId,
+      ref:'Like'
+    }
+  ],
+  comments:[
+    {
+      type:Schema.Types.ObjectId,
+      ref:'Comment'
+    }
+  ]
 },{timestamps:true})
 
 videoSchema.plugin(mongooseAggregatePaginate)
