@@ -8,8 +8,7 @@ const connectDB = async () => {
     console.log(`\n DB connected !! DB Host: ${dbInstant.connection.host}`)
   } catch (err) {
     console.log('dbConnect: ',err)
-    throw err
-    // process.exit(1) 
+    process.exit(1) 
   }
 }
 

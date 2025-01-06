@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser'
 
 const app = express()
 
-// use is kinda middleware?? adding basic things
 app.use(cors({ // setting cors
   origin: process.env.CORS_ORIGIN,
   credentials: true
@@ -18,6 +17,17 @@ app.use(express.urlencoded({ // data coming from urls
 }))
 app.use(express.static('public')) // storing assets
 app.use(cookieParser()) // to set-get browser's cookies
+
+import swaggerJsdoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
+import { options } from './swaggerConfig.js'
+
+const specs = swaggerJsdoc(options)
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(specs)
+)
 
 // routes import
 import userRouter from './routes/user.routes.js'
