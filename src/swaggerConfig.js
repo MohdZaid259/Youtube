@@ -6,7 +6,6 @@ const swaggerDefinition = {
     description: 'Access YouTube video data, playlists, and channel information through this API for seamless integration and management.',
     contact: {
       name: 'Mohd Zaid',
-      url: 'https://zaidfolio.vercel.app/',
       email: 'razvizaid259@gmail.com'
     }
   },
