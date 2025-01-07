@@ -1,6 +1,9 @@
 import 'dotenv/config.js'
 import connectDB from "./db/index.js";
 import app from './app.js'
+import serverless from 'serverless-http';
+
+let handler;
 
 connectDB()
   .then(()=>{
@@ -8,10 +11,10 @@ connectDB()
       console.log('Err on express-db connect: ',err)
       throw err
     })
-    app.listen(process.env.PORT || 8000,()=>{
-      console.log(`server running at port: ${process.env.PORT}`)
-    })
+    handler = serverless(app); 
   })
   .catch((err)=>{
     console.log('dbConnection failed ',err)
   })
+
+export { handler };
