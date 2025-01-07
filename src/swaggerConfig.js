@@ -12,8 +12,8 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:8000/api/v1',
-      description: 'Local server',
+      url: 'https://yt-backend-six.vercel.app/api/v1',
+      description: 'Production server',
     },
   ],
   components: {
