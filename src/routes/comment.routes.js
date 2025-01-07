@@ -1,7 +1,7 @@
 /**
  * @swagger
  * tags:
- *   name: Comments
+ *   name: Comment
  *   description: API endpoints for managing comments on videos.
  */
 
@@ -16,10 +16,10 @@ commentRouter.use(verifyJWT)
 
 /**
  * @swagger
- * /comments/{videoId}:
+ * /comment/{videoId}:
  *   post:
  *     summary: Add a new comment to a video.
- *     tags: [Comments]
+ *     tags: [Comment]
  *     parameters:
  *       - in: path
  *         name: videoId
@@ -40,11 +40,17 @@ commentRouter.use(verifyJWT)
  *     responses:
  *       201:
  *         description: Comment successfully added.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Comment'
  *       400:
  *         description: Invalid video ID or comment content.
  *   get:
  *     summary: Get all comments for a video.
- *     tags: [Comments]
+ *     tags: [Comment]
  *     parameters:
  *       - in: path
  *         name: videoId
@@ -60,18 +66,7 @@ commentRouter.use(verifyJWT)
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   commentId:
- *                     type: string
- *                     description: ID of the comment.
- *                   content:
- *                     type: string
- *                     description: Content of the comment.
- *                   timestamp:
- *                     type: string
- *                     format: date-time
- *                     description: Time when the comment was created.
+ *                 $ref: '#/components/schemas/Comment'
  *       400:
  *         description: Invalid video ID.
  */
@@ -81,10 +76,10 @@ commentRouter.route('/:videoId')
 
 /**
  * @swagger
- * /comments/c/{commentId}:
+ * /comment/c/{commentId}:
  *   patch:
  *     summary: Edit an existing comment.
- *     tags: [Comments]
+ *     tags: [Comment]
  *     parameters:
  *       - in: path
  *         name: commentId
@@ -109,7 +104,7 @@ commentRouter.route('/:videoId')
  *         description: Invalid comment ID or content.
  *   delete:
  *     summary: Delete a comment.
- *     tags: [Comments]
+ *     tags: [Comment]
  *     parameters:
  *       - in: path
  *         name: commentId

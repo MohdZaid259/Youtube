@@ -1,8 +1,8 @@
 /**
  * @swagger
  * tags:
- *   name: Playlists
- *   description: API endpoints for managing playlists.
+ *   name: Playlist
+ *   description: API endpoints for playlist management
  */
 
 import { Router } from "express";
@@ -16,10 +16,10 @@ playlistRouter.use(verifyJWT)
 
 /**
  * @swagger
- * /playlists:
+ * /playlist:
  *   post:
  *     summary: Create a new playlist.
- *     tags: [Playlists]
+ *     tags: [Playlist]
  *     requestBody:
  *       required: true
  *       content:
@@ -42,6 +42,12 @@ playlistRouter.use(verifyJWT)
  *     responses:
  *       201:
  *         description: Playlist successfully created.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Playlist'
  *       400:
  *         description: Invalid data or missing fields.
  */
@@ -49,10 +55,10 @@ playlistRouter.route('/').post(validation.videoId, validation.playlistData, crea
 
 /**
  * @swagger
- * /playlists/{playlistId}:
+ * /playlist/{playlistId}:
  *   delete:
  *     summary: Delete a playlist.
- *     tags: [Playlists]
+ *     tags: [Playlist]
  *     parameters:
  *       - in: path
  *         name: playlistId
@@ -70,10 +76,10 @@ playlistRouter.route('/:playlistId').delete(validation.playlistId, deletePlaylis
 
 /**
  * @swagger
- * /playlists/{playlistId}/add-video/{videoId}:
+ * /playlist/{videoId}:
  *   patch:
  *     summary: Add a video to a playlist.
- *     tags: [Playlists]
+ *     tags: [Playlist]
  *     parameters:
  *       - in: path
  *         name: playlistId
@@ -90,11 +96,23 @@ playlistRouter.route('/:playlistId').delete(validation.playlistId, deletePlaylis
  *     responses:
  *       200:
  *         description: Video successfully added to the playlist.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Playlist'
  *       400:
  *         description: Invalid playlist ID or video ID.
+ */
+playlistRouter.route('/:videoId').patch(validation.playlistId, validation.videoId, addToPlaylist)
+
+/**
+ * @swagger
+ * /playlist/{videoId}:
  *   patch:
  *     summary: Remove a video from a playlist.
- *     tags: [Playlists]
+ *     tags: [Playlist]
  *     parameters:
  *       - in: path
  *         name: playlistId
@@ -113,9 +131,15 @@ playlistRouter.route('/:playlistId').delete(validation.playlistId, deletePlaylis
  *         description: Video successfully removed from the playlist.
  *       400:
  *         description: Invalid playlist ID or video ID.
+*/
+playlistRouter.route('/:videoId').patch(validation.playlistId, validation.videoId, removeFromPlaylist)
+
+/**
+ * @swagger
+ * /playlist:
  *   patch:
  *     summary: Update playlist details.
- *     tags: [Playlists]
+ *     tags: [Playlist]
  *     parameters:
  *       - in: path
  *         name: playlistId
@@ -139,11 +163,15 @@ playlistRouter.route('/:playlistId').delete(validation.playlistId, deletePlaylis
  *     responses:
  *       200:
  *         description: Playlist successfully updated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Playlist'
  *       400:
  *         description: Invalid playlist ID or data.
  */
-playlistRouter.route('/:videoId').patch(validation.playlistId, validation.videoId, addToPlaylist)
-                                .patch(validation.playlistId, validation.videoId, removeFromPlaylist)
-                                .patch(validation.playlistId, validation.playlistData, updatePlaylist)
+playlistRouter.route('/:videoId').patch(validation.playlistId, validation.playlistData, updatePlaylist)
 
 export default playlistRouter

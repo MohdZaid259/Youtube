@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *   name: Video
- *   description: API endpoints for video management.
+ *   description: API endpoints for videos management.
  */
 
 import { Router } from 'express'
@@ -17,7 +17,7 @@ videoRouter.use(verifyJWT)
 
 /**
  * @swagger
- * /upload-video:
+ * /video/upload-video:
  *   post:
  *     summary: Upload a new video
  *     tags: [Video]
@@ -37,6 +37,12 @@ videoRouter.use(verifyJWT)
  *     responses:
  *       200:
  *         description: Video uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Video'
  *       400:
  *         description: Bad request
  */
@@ -58,7 +64,7 @@ videoRouter.route('/upload-video').post(
 
 /**
  * @swagger
- * /{videoId}:
+ * /video/{videoId}:
  *   delete:
  *     summary: Delete a video
  *     tags: [Video]
@@ -95,8 +101,22 @@ videoRouter.route('/upload-video').post(
  *     responses:
  *       200:
  *         description: Video updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Video'
  *       400:
  *         description: Bad request
+ */
+videoRouter.route('/:videoId')
+          .delete(validation.videoId,deleteVideo)
+          .patch(upload.single('thumbnail'),validation.thumbnail,validation.videoId, updateVideo)
+
+/**
+ * @swagger
+ * /video/{videoId}:
  *   get:
  *     summary: Get video details
  *     tags: [Video]
@@ -109,17 +129,20 @@ videoRouter.route('/upload-video').post(
  *     responses:
  *       200:
  *         description: Video details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Video'
  *       400:
  *         description: Bad request
  */
-videoRouter.route('/:videoId')
-          .delete(validation.videoId,deleteVideo)
-          .patch(upload.single('thumbnail'),validation.thumbnail,validation.videoId, updateVideo)
-          .get(validation.videoId,getVideoDetails)
+videoRouter.route('/:videoId').get(validation.videoId,getVideoDetails)
           
 /**
  * @swagger
- * /toggle/{videoId}:
+ * /video/toggle/{videoId}:
  *   patch:
  *     summary: Toggle video publish status
  *     tags: [Video]
@@ -132,6 +155,12 @@ videoRouter.route('/:videoId')
  *     responses:
  *       200:
  *         description: Video publish status toggled successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Video'
  *       400:
  *         description: Bad request
  */

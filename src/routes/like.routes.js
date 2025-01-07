@@ -1,8 +1,8 @@
 /**
  * @swagger
  * tags:
- *   name: Likes
- *   description: API endpoints for managing likes on videos, comments, and replies, and fetching liked videos.
+ *   name: Like
+ *   description: API endpoints for managing likes on videos, comments and replies.
  */
 
 import { Router } from "express";
@@ -16,10 +16,10 @@ likeRouter.use(verifyJWT)
 
 /**
  * @swagger
- * /likes/{videoId}:
+ * /like/{videoId}:
  *   post:
  *     summary: Toggle like for a video.
- *     tags: [Likes]
+ *     tags: [Like]
  *     parameters:
  *       - in: path
  *         name: videoId
@@ -37,10 +37,10 @@ likeRouter.route('/:videoId').post(validation.videoId, toggleVideoLike)
 
 /**
  * @swagger
- * /likes/{commentId}:
+ * /like/{commentId}:
  *   post:
  *     summary: Toggle like for a comment.
- *     tags: [Likes]
+ *     tags: [Like]
  *     parameters:
  *       - in: path
  *         name: commentId
@@ -58,10 +58,10 @@ likeRouter.route('/:commentId').post(validation.commentId, toggleCommentLike)
 
 /**
  * @swagger
- * /likes/{replyId}:
+ * /like/{replyId}:
  *   post:
  *     summary: Toggle like for a reply.
- *     tags: [Likes]
+ *     tags: [Like]
  *     parameters:
  *       - in: path
  *         name: replyId
@@ -79,10 +79,10 @@ likeRouter.route('/:replyId').post(validation.replyId, toggleReplyLike)
 
 /**
  * @swagger
- * /likes/likedVideos:
+ * /like/likedVideos:
  *   get:
  *     summary: Get a list of liked videos.
- *     tags: [Likes]
+ *     tags: [Like]
  *     responses:
  *       200:
  *         description: Successfully retrieved the list of liked videos.
@@ -91,18 +91,7 @@ likeRouter.route('/:replyId').post(validation.replyId, toggleReplyLike)
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   videoId:
- *                     type: string
- *                     description: ID of the liked video.
- *                   title:
- *                     type: string
- *                     description: Title of the liked video.
- *                   likedAt:
- *                     type: string
- *                     format: date-time
- *                     description: Timestamp of when the video was liked.
+ *                 $ref: '#/components/schemas/Like'
  */
 likeRouter.route('/likedVideos').get(getLikedVideos)
 

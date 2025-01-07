@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *   name: User
- *   description: API endpoints for managing users.
+ *   description: API endpoints for users management.
  */
 
 import { Router } from "express";
@@ -15,7 +15,7 @@ const userRouter = Router()
 
 /**
  * @swagger
- * /register:
+ * /user/register:
  *   post:
  *     summary: Register a new user
  *     tags: [User]
@@ -41,8 +41,15 @@ const userRouter = Router()
  *     responses:
  *       200:
  *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad request
+ *     security: [] 
  */
 userRouter.route('/register').post(
   upload.fields([
@@ -60,7 +67,7 @@ userRouter.route('/register').post(
 
 /**
  * @swagger
- * /login:
+ * /user/login:
  *   post:
  *     summary: Login a user
  *     tags: [User]
@@ -80,8 +87,15 @@ userRouter.route('/register').post(
  *     responses:
  *       200:
  *         description: Logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad request
+ *     security: [] 
  */
 userRouter.route('/login').post(validation.loginUser,loginUser)
 
@@ -89,7 +103,7 @@ userRouter.route('/login').post(validation.loginUser,loginUser)
 
 /**
  * @swagger
- * /logout:
+ * /user/logout:
  *   post:
  *     summary: Logout a user
  *     tags: [User]
@@ -103,7 +117,7 @@ userRouter.route('/logout').post(verifyJWT, logoutUser)
 
 /**
  * @swagger
- * /refresh-token:
+ * /user/refresh-token:
  *   post:
  *     summary: Refresh access token
  *     tags: [User]
@@ -117,7 +131,7 @@ userRouter.route('/refresh-token').post(refreshAccessToken)
 
 /**
  * @swagger
- * /change-password:
+ * /user/change-password:
  *   post:
  *     summary: Change user password
  *     tags: [User]
@@ -142,13 +156,19 @@ userRouter.route('/change-password').post(verifyJWT, changePassword)
 
 /**
  * @swagger
- * /current-user:
+ * /user/current-user:
  *   get:
  *     summary: Get current user details
  *     tags: [User]
  *     responses:
  *       200:
  *         description: Current user details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad request
  */
@@ -156,7 +176,7 @@ userRouter.route('/current-user').get(verifyJWT, currentUser)
 
 /**
  * @swagger
- * /update-account:
+ * /user/update-account:
  *   patch:
  *     summary: Update user account details
  *     tags: [User]
@@ -174,6 +194,12 @@ userRouter.route('/current-user').get(verifyJWT, currentUser)
  *     responses:
  *       200:
  *         description: Account updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad request
  */
@@ -181,7 +207,7 @@ userRouter.route('/update-account').patch(verifyJWT, validation.updateUser, upda
 
 /**
  * @swagger
- * /update-avatar:
+ * /user/update-avatar:
  *   patch:
  *     summary: Update user avatar
  *     tags: [User]
@@ -205,7 +231,7 @@ userRouter.route('/update-avatar').patch(verifyJWT, upload.single('avatar'), val
 
 /**
  * @swagger
- * /update-cover-image:
+ * /user/update-cover-image:
  *   patch:
  *     summary: Update user cover image
  *     tags: [User]
@@ -229,7 +255,7 @@ userRouter.route('/update-coverImage').patch(verifyJWT, upload.single('coverImag
 
 /**
  * @swagger
- * /update-watch-history:
+ * /user/update-watch-history:
  *   patch:
  *     summary: Update user watch history
  *     tags: [User]
@@ -245,6 +271,12 @@ userRouter.route('/update-coverImage').patch(verifyJWT, upload.single('coverImag
  *     responses:
  *       200:
  *         description: Watch history updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad request
  */
@@ -252,7 +284,7 @@ userRouter.route('/update-watchHistory/:videoId').patch(verifyJWT,validation.vid
 
 /**
  * @swagger
- * /channel-profile/{userId}:
+ * /user/channel-profile/{userId}:
  *   get:
  *     summary: Get channel profile
  *     tags: [User]
@@ -265,6 +297,12 @@ userRouter.route('/update-watchHistory/:videoId').patch(verifyJWT,validation.vid
  *     responses:
  *       200:
  *         description: Channel profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad request
  */
@@ -272,13 +310,19 @@ userRouter.route('/channel/:username').get(verifyJWT, getChannelProfile)
 
 /**
  * @swagger
- * /watch-history:
+ * /user/watch-history:
  *   get:
  *     summary: Get user watch history
  *     tags: [User]
  *     responses:
  *       200:
  *         description: Watch history retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad request
  */

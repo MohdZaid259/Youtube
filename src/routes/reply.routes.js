@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *   name: Reply
- *   description: API endpoints for managing replies.
+ *   description: API endpoints for replies management.
  */
 
 import { Router } from "express";
@@ -30,6 +30,12 @@ replyRouter.use(verifyJWT)
  *     responses:
  *       200:
  *         description: Video uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Reply'
  *       400:
  *         description: Bad request
  */
@@ -37,7 +43,7 @@ replyRouter.route('/:commentId').post(validation.commentId, addReply)
 
 /**
  * @swagger
- * /replies/{replyId}:
+ * /reply/{replyId}:
  *   delete:
  *     summary: Delete a reply.
  *     tags: [Reply]
@@ -53,7 +59,7 @@ replyRouter.route('/:commentId').post(validation.commentId, addReply)
  *         description: Reply successfully deleted.
  *       400:
  *         description: Invalid reply ID.
- *  patch:
+ *   patch:
  *     summary: Edit a reply.
  *     tags: [Reply]
  *     parameters:

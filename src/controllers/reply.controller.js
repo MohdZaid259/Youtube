@@ -6,7 +6,7 @@ import replyService from "../services/reply.service.js";
 
 const addReply = asyncHandler( async(req,res) => {
   const {content} = req.body
-  const commentId = req.params
+  const {commentId} = req.params
 
   const comment = await commentService.findCommentById(commentId)
 
@@ -29,7 +29,7 @@ const addReply = asyncHandler( async(req,res) => {
 })
 
 const deleteReply = asyncHandler( async(req,res) => {
-  const replyId = req.params
+  const {replyId} = req.params
 
   const reply = await replyService.findById(replyId)
 
@@ -55,8 +55,8 @@ const deleteReply = asyncHandler( async(req,res) => {
 })
 
 const editReply = asyncHandler( async(req,res) => {
-  const replyId = req.params
-  const content = req.body
+  const {replyId} = req.params
+  const {content} = req.body
 
   const reply = await replyService.findById(replyId)
 
