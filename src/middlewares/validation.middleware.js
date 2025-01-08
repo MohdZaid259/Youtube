@@ -65,7 +65,6 @@ const videoId = (req,_,next) => {
 }
 
 const videoFile = (req,_,next) => {
-  console.log(req)
   const videoFileLocalPath = req.files?.videoFile[0]?.path
 
   if(!videoFileLocalPath){
