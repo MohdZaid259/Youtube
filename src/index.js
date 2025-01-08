@@ -17,4 +17,4 @@ connectDB()
     console.log('dbConnection failed ',err)
   })
 
-export { handler };
+export default handler 
