@@ -29,6 +29,10 @@ app.use(
   swaggerUi.setup(specs)
 )
 
+app.get('/testing',(req,res)=>{
+  res.send("It's working alright!")
+})
+
 // routes import
 import userRouter from './routes/user.routes.js'
 import videoRouter from './routes/video.routes.js'
