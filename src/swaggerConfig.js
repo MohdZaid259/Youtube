@@ -35,8 +35,11 @@ const swaggerDefinition = {
   ],
 };
 
+const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css';
+
 const options = {
   swaggerDefinition,
+  customCssUrl: CSS_URL,
   apis: ['./src/routes/user.routes.js', './src/routes/video.routes.js', './src/routes/playlist.routes.js', './src/routes/subscription.routes.js', './src/routes/like.routes.js', './src/routes/comment.routes.js', './src/routes/reply.routes.js',
   "./src/models/user.model.js", "./src/models/video.model.js", "./src/models/playlist.model.js", "./src/models/subscription.model.js", "./src/models/like.model.js", "./src/models/comment.model.js", "./src/models/reply.model.js"],
 };

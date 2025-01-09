@@ -24,10 +24,11 @@ import { options } from './swaggerConfig.js'
 import { SwaggerUIBundle, SwaggerUIStandalonePreset } from 'swagger-ui-dist';
 
 const specs = swaggerJsdoc(options)
+
 app.use(
   '/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(specs)
+  swaggerUi.serveFiles(specs,options),
+  swaggerUi.setup(specs,options)
 )
 
 app.get('/testing',(req,res)=>{
