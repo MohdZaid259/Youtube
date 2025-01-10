@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { isValidObjectId } from "mongoose";
 import videoService from '../services/video.service.js'
+import { Video } from "../models/video.model.js";
 
 const uploadVideo = asyncHandler( async(req,res) => {
   // get video details
@@ -134,89 +135,36 @@ const getVideoDetails = asyncHandler( async(req,res) => {
 })
 
 const getAllVideos = asyncHandler( async(req,res) => {
-  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
+  const page = 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
 
-  if (!isValidObjectId(userId)) {
-    throw new ApiError("Invalid user ID", 400);
-  }
-
-  const pipeline = [];
-
-  if (userId) {
-    pipeline.push({ $match: { owner: new mongoose.Types.ObjectId(userId) } });
-  }
-
-  const queryOptions = "i";
-
-  if (query) {
-    pipeline.push({
-      $match: {
-        title: {
-          $regex: query,
-          options: queryOptions,
+    const pipeline = [
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          thumbnailUrl: 1,
+          createdAt: 1,
+          views: 1,
         },
       },
-    });
-  }
+    ];
 
-  pipeline.push({
-    $match: {
-      owner: new mongoose.Types.ObjectId(userId),
-      isPublished: true,
-    },
-  });
+    const videos = await Video.aggregate(pipeline);
 
-  if (sortBy && sortType) {
-    pipeline.push({
-      $sort: {
-        [sortBy]: sortType === "asc" ? 1 : -1,
-      },
-    });
-  } else {
-    pipeline.push({
-      $sort: {
-        createdAt: -1,
-      },
-    });
-  }
-
-  pipeline.push({
-    $lookup: {
-      from: "users",
-      localField: "owner",
-      foreignField: "_id",
-      as: "ownerDetails",
-      pipeline: [
-        {
-          $project: {
-            username: 1,
-            "avatar.url": 1,
-          },
-        },
-      ],
-    },
-  });
-
-  pipeline.push({
-    $unwind: {
-      path: "$ownerDetails",
-      preserveNullAndEmptyArrays: true,
-    },
-  });
-
-  const options = {
-    page: parseInt(page, 10),
-    limit: parseInt(limit, 10),
-  };
-
-  const video = await Video.aggregatePaginate(
-    Video.aggregate(pipeline),
-    options
-  );
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, video, "All videos fetched successfully"));
+    res.status(200).json(
+      new ApiResponse(200,videos,'Videos fetched successfully!')
+    )
 })
 
 const togglePublish = asyncHandler( async(req,res) => {
