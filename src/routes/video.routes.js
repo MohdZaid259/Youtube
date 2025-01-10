@@ -6,7 +6,7 @@
  */
 
 import { Router } from 'express'
-import { deleteVideo, getVideoDetails, updateVideo, uploadVideo, togglePublish } from '../controllers/video.controller.js'
+import { deleteVideo, getVideoDetails, getAllVideos, updateVideo, uploadVideo, togglePublish } from '../controllers/video.controller.js'
 import { verifyJWT } from '../middlewares/auth.middleware.js'
 import { upload } from '../middlewares/multer.middleware.js'
 import validation from '../middlewares/validation.middleware.js'
@@ -165,5 +165,25 @@ videoRouter.route('/:videoId').get(validation.videoId,getVideoDetails)
  *         description: Bad request
  */
 videoRouter.route('/toggle/:videoId').patch(validation.videoId,togglePublish)
+
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: Get all videos
+ *     tags: [Video]
+ *     responses:
+ *       200:
+ *         description: List of all videos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Video'
+ *       400:
+ *         description: Bad request
+ */
+videoRouter.route('/').get(getAllVideos)
 
 export default videoRouter
