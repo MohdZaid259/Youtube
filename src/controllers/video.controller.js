@@ -136,7 +136,7 @@ const getVideoDetails = asyncHandler( async(req,res) => {
 
 const getAllVideos = asyncHandler( async(req,res) => {
   const page = 1;
-  const limit = 10;
+  const limit = 15;
   const skip = (page - 1) * limit;
 
     const pipeline = [
