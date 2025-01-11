@@ -168,9 +168,9 @@ videoRouter.route('/toggle/:videoId').patch(validation.videoId,togglePublish)
 
 /**
  * @swagger
- * /:
+ * /video:
  *   get:
- *     summary: Get all videos
+ *     summary: Get all the videos
  *     tags: [Video]
  *     responses:
  *       200:
