@@ -182,6 +182,7 @@ videoRouter.route('/toggle/:videoId').patch(verifyJWT,validation.videoId,toggleP
  *                 $ref: '#/components/schemas/Video'
  *       400:
  *         description: Bad request
+ *     security: [] 
  */
 videoRouter.route('/').get(getAllVideos)
 

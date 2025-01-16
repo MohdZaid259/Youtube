@@ -150,12 +150,28 @@ const getAllVideos = asyncHandler( async(req,res) => {
         $limit: limit,
       },
       {
+        $lookup: {
+          from: 'users',
+          localField: 'owner',
+          foreignField: '_id',
+          as: 'ownerDetails',
+        }
+      },
+      {
+        $unwind: {
+          path: '$ownerDetails',
+        }
+      },
+      {
         $project: {
+          videoFile:1,
+          thumbnail:1,
+          duration:1,
           title: 1,
           description: 1,
-          thumbnailUrl: 1,
-          createdAt: 1,
-          views: 1,
+          ownerName: '$ownerDetails.fullName',
+          avatar: '$ownerDetails.avatar',
+          subscriberCount: '$ownerDetails.subscriberCount',
         },
       },
     ];
