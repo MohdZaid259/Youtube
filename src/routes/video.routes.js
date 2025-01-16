@@ -13,8 +13,6 @@ import validation from '../middlewares/validation.middleware.js'
 
 const videoRouter = Router()
 
-videoRouter.use(verifyJWT)
-
 /**
  * @swagger
  * /video/upload-video:
@@ -57,6 +55,7 @@ videoRouter.route('/upload-video').post(
       maxCount:1
     }
   ]),
+  verifyJWT,
   validation.videoData,
   validation.videoFile,
   uploadVideo
@@ -111,8 +110,8 @@ videoRouter.route('/upload-video').post(
  *         description: Bad request
  */
 videoRouter.route('/:videoId')
-          .delete(validation.videoId,deleteVideo)
-          .patch(upload.single('thumbnail'),validation.thumbnail,validation.videoId, updateVideo)
+          .delete(verifyJWT,validation.videoId,deleteVideo)
+          .patch(verifyJWT,upload.single('thumbnail'),validation.thumbnail,validation.videoId, updateVideo)
 
 /**
  * @swagger
@@ -138,7 +137,7 @@ videoRouter.route('/:videoId')
  *       400:
  *         description: Bad request
  */
-videoRouter.route('/:videoId').get(validation.videoId,getVideoDetails)
+videoRouter.route('/:videoId').get(verifyJWT,validation.videoId,getVideoDetails)
           
 /**
  * @swagger
@@ -164,7 +163,7 @@ videoRouter.route('/:videoId').get(validation.videoId,getVideoDetails)
  *       400:
  *         description: Bad request
  */
-videoRouter.route('/toggle/:videoId').patch(validation.videoId,togglePublish)
+videoRouter.route('/toggle/:videoId').patch(verifyJWT,validation.videoId,togglePublish)
 
 /**
  * @swagger
