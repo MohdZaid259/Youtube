@@ -169,9 +169,8 @@ const getAllVideos = asyncHandler( async(req,res) => {
           duration:1,
           title: 1,
           description: 1,
-          ownerName: '$ownerDetails.fullName',
+          ownerName: '$ownerDetails.fullname',
           avatar: '$ownerDetails.avatar',
-          subscriberCount: '$ownerDetails.subscriberCount',
         },
       },
     ];
