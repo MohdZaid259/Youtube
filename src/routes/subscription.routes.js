@@ -1,8 +1,8 @@
 /**
  * @swagger
  * tags:
- *   name: Subscription
- *   description: API endpoints for subscriptions management.
+ *   name: Subscriptions
+ *   description: API endpoints for managing subscriptions.
  */
 
 import { Router } from "express";
@@ -16,10 +16,10 @@ subscriptionRouter.use(verifyJWT)
 
 /**
  * @swagger
- * /subscription/{channelId}:
+ * /subscriptions/{channelId}:
  *   post:
  *     summary: Toggle subscription for a channel.
- *     tags: [Subscription]
+ *     tags: [Subscriptions]
  *     parameters:
  *       - in: path
  *         name: channelId
@@ -30,17 +30,11 @@ subscriptionRouter.use(verifyJWT)
  *     responses:
  *       200:
  *         description: Successfully toggled subscription.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Subscription'
  *       400:
  *         description: Invalid channel ID.
- *   get:
+ *  get:
  *     summary: Get subscribers for a channel.
- *     tags: [Subscription]
+ *     tags: [Subscriptions]
  *     parameters:
  *       - in: path
  *         name: channelId
@@ -51,24 +45,11 @@ subscriptionRouter.use(verifyJWT)
  *     responses:
  *       200:
  *         description: List of channel subscribers.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Subscription'
  *       400:
  *         description: Invalid channel ID.
- */
-subscriptionRouter.route('/:channelId').post(validation.channelId,toggleSubscription)
-                                      .get(validation.channelId,getChannelSubscribers)
-
-/**
- * @swagger
- * /subscription/{channelId}:
- *   get:
+ *  get:
  *     summary: Get channels the user is subscribed to.
- *     tags: [Subscription]
+ *     tags: [Subscriptions]
  *     parameters:
  *       - in: path
  *         name: channelId
@@ -79,15 +60,11 @@ subscriptionRouter.route('/:channelId').post(validation.channelId,toggleSubscrip
  *     responses:
  *       200:
  *         description: List of subscribed channels.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Subsription'
  *       400:
  *         description: Invalid channel ID.
  */
-subscriptionRouter.route('/:channelId').get(validation.channelId,getSubscribedChannels)
+subscriptionRouter.route('/:channelId').post(validation.channelId,toggleSubscription)
+                                      .get(validation.channelId,getChannelSubscribers)
+                                      .get(validation.channelId,getSubscribedChannels)
 
 export default subscriptionRouter
