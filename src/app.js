@@ -39,6 +39,7 @@ app.use(
     customCssUrl: CSS_URL
   })
 )
+app.use('/',(req,res)=>res.send('hello'))
 
 app.get('/testing',(req,res)=>{
   res.send("It's working alright!")

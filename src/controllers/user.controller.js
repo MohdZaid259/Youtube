@@ -35,7 +35,6 @@ const registerUser = asyncHandler(async (req, res) => {
   const { fullname, username, password, email } = req.body;
 
   const existedUser = await userService.findOneUser({
-    // what if find
     $or: [{ username }, { email }],
   });
 
@@ -65,11 +64,14 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     username: username.toLowerCase(),
   };
-
+  console.log(userData);
+  
   const user = await userService.createUser(userData);
+  console.log(user)
 
   const createdUser = await userService.findUserById(user?._id, true);
-
+  console.log(createdUser);
+  
   if (!createdUser) {
     throw new ApiError(500, "Something went wrong while registration!");
   }
