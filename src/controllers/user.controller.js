@@ -64,13 +64,10 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     username: username.toLowerCase(),
   };
-  console.log(userData);
   
   const user = await userService.createUser(userData);
-  console.log(user)
 
   const createdUser = await userService.findUserById(user?._id, true);
-  console.log(createdUser);
   
   if (!createdUser) {
     throw new ApiError(500, "Something went wrong while registration!");
