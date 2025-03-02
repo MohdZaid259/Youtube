@@ -41,7 +41,7 @@ app.use(
   })
 )
 
-app.use('/',(req,res)=>res.send("It's working alright!"))
+app.use('/',(req,res)=>res.send("Site working alright!"))
 
 // routes import
 import userRouter from './routes/user.routes.js'
