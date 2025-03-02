@@ -8,6 +8,7 @@ app.use(cors({ // setting cors
   origin: process.env.CORS_ORIGIN,
   credentials: true
 }))
+// - for testing only -
 // app.use(cors({
 //   origin: 'http://localhost:3000',
 //   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -39,7 +40,8 @@ app.use(
     customCssUrl: CSS_URL
   })
 )
-// app.use('/',(req,res)=>res.send("It's working alright!"))
+
+app.use('/',(req,res)=>res.send("It's working alright!"))
 
 // routes import
 import userRouter from './routes/user.routes.js'
