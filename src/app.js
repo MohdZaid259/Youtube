@@ -39,7 +39,6 @@ app.use(
     customCssUrl: CSS_URL
   })
 )
-app.use('/',(req,res)=>res.send("It's working alright!"))
 
 // routes import
 import userRouter from './routes/user.routes.js'
@@ -56,5 +55,7 @@ app.use('/api/v1/comment',commentRouter)
 app.use('/api/v1/like',likeRouter)
 app.use('/api/v1/reply',replyRouter)
 app.use('/api/v1/subscription',subscriptionRouter)
+
+app.use('/',(req,res)=>res.send("It's working alright!"))
 
 export default app
