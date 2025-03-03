@@ -27,7 +27,6 @@ app.use(cookieParser()) // to set-get browser's cookies
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 import { options } from './swaggerConfig.js'
-import { SwaggerUIBundle, SwaggerUIStandalonePreset } from 'swagger-ui-dist';
 
 const specs = swaggerJsdoc(options)
 const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.3.0/swagger-ui.min.css';
