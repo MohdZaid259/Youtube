@@ -41,8 +41,6 @@ app.use(
   })
 )
 
-app.use('/',(req,res)=>res.send("Site working alright!"))
-
 // routes import
 import userRouter from './routes/user.routes.js'
 import videoRouter from './routes/video.routes.js'
@@ -58,5 +56,7 @@ app.use('/api/v1/comment',commentRouter)
 app.use('/api/v1/like',likeRouter)
 app.use('/api/v1/reply',replyRouter)
 app.use('/api/v1/subscription',subscriptionRouter)
+
+app.use('/',(req,res)=>res.send("Site working alright!"))
 
 export default app
