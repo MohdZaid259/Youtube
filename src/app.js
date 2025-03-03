@@ -8,6 +8,7 @@ app.use(cors({ // setting cors
   origin: process.env.CORS_ORIGIN,
   credentials: true
 }))
+// - for testing only -
 // app.use(cors({
 //   origin: 'http://localhost:3000',
 //   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -26,7 +27,6 @@ app.use(cookieParser()) // to set-get browser's cookies
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 import { options } from './swaggerConfig.js'
-import { SwaggerUIBundle, SwaggerUIStandalonePreset } from 'swagger-ui-dist';
 
 const specs = swaggerJsdoc(options)
 const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.3.0/swagger-ui.min.css';
@@ -56,6 +56,6 @@ app.use('/api/v1/like',likeRouter)
 app.use('/api/v1/reply',replyRouter)
 app.use('/api/v1/subscription',subscriptionRouter)
 
-app.use('/',(req,res)=>res.send("It's working alright!"))
+app.use('/',(req,res)=>res.send("Site working alright!"))
 
 export default app
