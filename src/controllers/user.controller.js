@@ -31,7 +31,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // remove password and refreshToken from response
   // check if user created
   // return response
-  console.log('registered console')
+
   const { fullname, username, password, email } = req.body;
 
   const existedUser = await userService.findOneUser({

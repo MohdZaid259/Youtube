@@ -4,7 +4,7 @@ import {ApiError} from '../utils/ApiError.js'
 const registerUser = (req,_,next) => {
   const {fullname, username, password, email} = req.body
 
-  if(
+  if( //if any of them is true, all true
     [fullname, username, password, email].some((item)=> item === undefined || item.trim() === '')
   ){
     throw new ApiError(400,'All fields are required!')
@@ -15,10 +15,11 @@ const registerUser = (req,_,next) => {
 const loginUser = (req,_,next) => {
   const {username,email,password} = req.body
 
-  if(
-    [username, email, password].some((item)=> item === undefined || item.trim()==='')
-  ){
-    throw new ApiError(400,'All fields are required!')
+  if(!password || password.trim() === ''){
+    throw new ApiError(400,'Password is required!')
+  }
+  if (!username && !email) {
+    throw new ApiError(400, 'Either username or email is required!');
   }
 
   next()
