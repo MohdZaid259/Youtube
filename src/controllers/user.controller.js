@@ -113,7 +113,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true, // to avoid xss attack
-    secure: false, // true for only https
+    secure: true, // true for only https
   };
   return res
     .status(200)
@@ -145,7 +145,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: false,
+    secure: true,
   };
   return res
     .status(200)
@@ -195,7 +195,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: false,
+    secure: true,
   };
 
   return res
