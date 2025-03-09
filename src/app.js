@@ -6,7 +6,8 @@ const app = express()
 
 app.use(cors({ // setting cors
   origin: process.env.CORS_ORIGIN,
-  credentials: true
+  credentials: true,
+  exposedHeaders: ["Set-cookie"] 
 }))
 // - for testing only -
 // app.use(cors({
