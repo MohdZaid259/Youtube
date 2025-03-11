@@ -172,7 +172,7 @@ userRouter.route('/change-password').post(verifyJWT, changePassword)
  *       400:
  *         description: Bad request
  */
-userRouter.route('/current-user').post(verifyJWT, currentUser)
+userRouter.route('/current-user').get(verifyJWT, currentUser)
 
 /**
  * @swagger
