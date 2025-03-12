@@ -137,7 +137,7 @@ videoRouter.route('/:videoId')
  *       400:
  *         description: Bad request
  */
-videoRouter.route('/:videoId').get(verifyJWT,validation.videoId,getVideoDetails)
+videoRouter.route('/:videoId').post(verifyJWT,validation.videoId,getVideoDetails)
           
 /**
  * @swagger
