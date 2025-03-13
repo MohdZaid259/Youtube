@@ -306,7 +306,7 @@ userRouter.route('/update-watchHistory/:videoId').patch(verifyJWT,validation.vid
  *       400:
  *         description: Bad request
  */
-userRouter.route('/channel/:username').get(verifyJWT, getChannelProfile)
+userRouter.route('/channel/:data').get(verifyJWT, getChannelProfile)
 
 /**
  * @swagger

@@ -318,17 +318,26 @@ const updateWatchHistory = asyncHandler( async(req,res) => {
 })
 
 const getChannelProfile = asyncHandler(async (req, res) => {
-  const { username } = req.params;
-
-  if (!username?.trim()) {
-    throw new ApiError(400, "username is missing!");
+  const { data } = req.params;
+  
+  if (!data?.trim()) {
+    throw new ApiError(400, "username or userId is missing!");
   }
+
+  let condition = {};
+
+  if (data.match(/^[0-9a-fA-F]{24}$/)) {
+      condition = { _id: new mongoose.Types.ObjectId(data.toLowerCase()) };
+  } else {
+      condition = { username: data.toLowerCase() };
+  }
+  
+  console.log(data)
+  console.log('condition ',condition)
 
   const channel = await User.aggregate([ 
     {
-      $match: {
-        username: username.toLowerCase(),
-      },
+      $match: { condition },
     },
     {
       $lookup: {
