@@ -320,6 +320,8 @@ const updateWatchHistory = asyncHandler( async(req,res) => {
 const getChannelProfile = asyncHandler(async (req, res) => {
   const { data } = req.params;
   
+  console.log('data ',data)
+
   if (!data?.trim()) {
     throw new ApiError(400, "username or userId is missing!");
   }
@@ -332,7 +334,6 @@ const getChannelProfile = asyncHandler(async (req, res) => {
       condition = { username: data.toLowerCase() };
   }
 
-  console.log(data)
   console.log('condition ',condition)
 
   const channel = await User.aggregate([ 
