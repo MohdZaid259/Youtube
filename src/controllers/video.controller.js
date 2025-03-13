@@ -1,7 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js"
-import { isValidObjectId } from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import videoService from '../services/video.service.js'
 import { Video } from "../models/video.model.js";
 
@@ -123,7 +123,98 @@ const getVideoDetails = asyncHandler( async(req,res) => {
     throw new ApiError(401,"Invalid videoId!")
   }
 
-  const video = await videoService.findVideoById(videoId)
+  // const video = await videoService.findVideoById(videoId)
+  const video = await Video.aggregate([
+    {
+      $match:{
+        _id:new mongoose.Types.ObjectId(videoId)
+      }
+    },
+    {
+      $lookup:{
+        from:'likes',
+        localField:'_id',
+        foreignField:'video',
+        as:'likes'
+      }
+    },
+    {
+      $lookup:{
+        from:'users',
+        localField:'owner',
+        foreignField:'_id',
+        as:'owner',
+        pipeline:[
+          {
+            $lookup:{
+              from:'subscriptions',
+              localField:'_id',
+              foreignField:'channel',
+              as:'subscribers'
+            }
+          },
+          {
+            $addFields:{
+              subscribersCount:{
+                $size:'$subscribers'
+              },
+              isSubscribed:{
+                $cond: {
+                  if: {
+                      $in: [
+                          req.user?._id,
+                          "$subscribers.subscriber"
+                      ]
+                  },
+                  then: true,
+                  else: false
+                }
+              }
+            }
+          },
+          {
+            $project: {
+              username: 1,
+              "avatar.url": 1,
+              subscribersCount: 1,
+              isSubscribed: 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      $addFields: {
+        likesCount: {
+            $size: "$likes"
+        },
+        owner: {
+            $first: "$owner"
+        },
+        isLiked: {
+            $cond: {
+                if: {$in: [req.user?._id, "$likes.likedBy"]},
+                then: true,
+                else: false
+            }
+        }
+      }
+    },
+    {
+      $project: {
+          "videoFile.url": 1,
+          title: 1,
+          description: 1,
+          views: 1,
+          createdAt: 1,
+          duration: 1,
+          comments: 1,
+          owner: 1,
+          likesCount: 1,
+          isLiked: 1
+      }
+  }
+  ])
 
   if(!video){
     throw new ApiError(404,'Video not found!')
