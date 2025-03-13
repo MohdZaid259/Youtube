@@ -57,6 +57,6 @@ app.use('/api/v1/like',likeRouter)
 app.use('/api/v1/reply',replyRouter)
 app.use('/api/v1/subscription',subscriptionRouter)
 
-app.use('/',(req,res)=>res.send("Site working alright!"))
+app.use('/testing',(req,res)=>res.send("Site working alright!"))
 
 export default app
