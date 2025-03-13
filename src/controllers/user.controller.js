@@ -327,11 +327,11 @@ const getChannelProfile = asyncHandler(async (req, res) => {
   let condition = {};
 
   if (data.match(/^[0-9a-fA-F]{24}$/)) {
-      condition = { _id: new mongoose.Types.ObjectId(data.toLowerCase()) };
+      condition = { _id: new mongoose.Types.ObjectId(data) };
   } else {
       condition = { username: data.toLowerCase() };
   }
-  
+
   console.log(data)
   console.log('condition ',condition)
 
