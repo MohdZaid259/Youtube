@@ -114,6 +114,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: false, // to avoid xss attack
     secure: false, // true for only https
+    sameSite: 'None' 
   };
   return res
     .status(200)
@@ -146,6 +147,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: false,
     secure: false,
+    sameSite: 'None'
   };
   return res
     .status(200)
@@ -196,6 +198,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: false,
     secure: false,
+    sameSite: 'None'
   };
 
   return res
