@@ -8,7 +8,7 @@
 import { Router } from "express";
 import { verifyJWT } from '../middlewares/auth.middleware.js'
 import validation from '../middlewares/validation.middleware.js'
-import { createPlaylist,deletePlaylist,addToPlaylist,removeFromPlaylist,updatePlaylist } from '../controllers/playlist.controller.js'
+import { createPlaylist,deletePlaylist,addToPlaylist,removeFromPlaylist,updatePlaylist,getPlaylist } from '../controllers/playlist.controller.js'
 
 const playlistRouter = Router()
 
@@ -76,7 +76,7 @@ playlistRouter.route('/:playlistId').delete(validation.playlistId, deletePlaylis
 
 /**
  * @swagger
- * /playlist/{videoId}:
+ * /playlist/add/{videoId}:
  *   patch:
  *     summary: Add a video to a playlist.
  *     tags: [Playlist]
@@ -105,11 +105,11 @@ playlistRouter.route('/:playlistId').delete(validation.playlistId, deletePlaylis
  *       400:
  *         description: Invalid playlist ID or video ID.
  */
-playlistRouter.route('/:videoId').patch(validation.playlistId, validation.videoId, addToPlaylist)
+playlistRouter.route('/add/:videoId').patch(validation.playlistId, validation.videoId, addToPlaylist)
 
 /**
  * @swagger
- * /playlist/{videoId}:
+ * /playlist/remove/{videoId}:
  *   patch:
  *     summary: Remove a video from a playlist.
  *     tags: [Playlist]
@@ -132,7 +132,7 @@ playlistRouter.route('/:videoId').patch(validation.playlistId, validation.videoI
  *       400:
  *         description: Invalid playlist ID or video ID.
 */
-playlistRouter.route('/:videoId').patch(validation.playlistId, validation.videoId, removeFromPlaylist)
+playlistRouter.route('/remove/:videoId').patch(validation.playlistId, validation.videoId, removeFromPlaylist)
 
 /**
  * @swagger
@@ -173,5 +173,45 @@ playlistRouter.route('/:videoId').patch(validation.playlistId, validation.videoI
  *         description: Invalid playlist ID or data.
  */
 playlistRouter.route('/:videoId').patch(validation.playlistId, validation.playlistData, updatePlaylist)
+
+/**
+ * @swagger
+ * /playlist:
+ *   get:
+ *     summary: get playlist details.
+ *     tags: [Playlist]
+ *     parameters:
+ *       - in: path
+ *         name: playlistId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the playlist to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Updated name of the playlist.
+ *               description:
+ *                 type: string
+ *                 description: Updated description of the playlist.
+ *     responses:
+ *       200:
+ *         description: Playlist successfully updated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Playlist'
+ *       400:
+ *         description: Invalid playlist ID or data.
+ */
+playlistRouter.route('/user/:userId').get(validation.userId, getPlaylist)
 
 export default playlistRouter

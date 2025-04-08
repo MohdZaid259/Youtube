@@ -56,6 +56,15 @@ const videoData = (req,_,next) => {
   next()
 }
 
+const userId = (req,_,next) => {
+  const { userId } = req.params
+
+  if(!isValidObjectId(userId)){
+    throw new ApiError(401,"Invalid userId!")
+  }
+  next()
+}
+
 const videoId = (req,_,next) => {
   const { videoId } = req.params
 
@@ -137,4 +146,4 @@ const replyId = (req,_,next) => {
   next()
 }
 
-export default { registerUser, loginUser, updateUser, updateUserImages, videoData, videoId, videoFile, thumbnail, commentId, commentContent, playlistId, playlistData, channelId, replyId }
+export default { registerUser, loginUser, updateUser, updateUserImages, videoData, userId, videoId, videoFile, thumbnail, commentId, commentContent, playlistId, playlistData, channelId, replyId }

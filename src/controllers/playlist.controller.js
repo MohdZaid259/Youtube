@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
-import { asyncHandler } from "../utils/asyncHandler";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import playlistService from '../services/playlist.service.js'
+import { Playlist } from '../models/playlist.model.js'
 
 const createPlaylist = asyncHandler( async(req,res) => {
   const {name,description} = req.body
@@ -137,4 +138,53 @@ const updatePlaylist = asyncHandler( async(req,res) => {
   )
 })
 
-export {addToPlaylist, removeFromPlaylist, createPlaylist, deletePlaylist, updatePlaylist}
+const getPlaylist = asyncHandler( async(req,res) => {
+  const { userId } = req.params;
+
+  if (!isValidObjectId(userId)) {
+      throw new ApiError(400, "Invalid userId");
+  }
+
+  const playlists = await Playlist.aggregate([
+      {
+          $match: {
+              owner: new mongoose.Types.ObjectId(userId)
+          }
+      },
+      {
+          $lookup: {
+              from: "videos",
+              localField: "videos",
+              foreignField: "_id",
+              as: "videos"
+          }
+      },
+      {
+          $addFields: {
+              totalVideos: {
+                  $size: "$videos"
+              },
+              totalViews: {
+                  $sum: "$videos.views"
+              }
+          }
+      },
+      {
+          $project: {
+              _id: 1,
+              name: 1,
+              description: 1,
+              totalVideos: 1,
+              totalViews: 1,
+              updatedAt: 1
+          }
+      }
+  ]);
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, playlists, "User playlists fetched successfully"));
+
+})
+
+export {addToPlaylist, removeFromPlaylist, createPlaylist, deletePlaylist, updatePlaylist, getPlaylist}

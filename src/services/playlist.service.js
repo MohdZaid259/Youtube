@@ -1,4 +1,4 @@
-import { Playlist } from '../model/playlist.model.js'
+import { Playlist } from '../models/playlist.model.js'
 
 const create = async(data) => {
   return await Playlist.create(data) 

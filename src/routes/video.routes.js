@@ -49,8 +49,7 @@ videoRouter.route('/upload-video').post(
     {
       name:'videoFile',
       maxCount:1
-    },
-    {
+    },{
       name:'thumbnail',
       maxCount:1
     }
@@ -137,7 +136,7 @@ videoRouter.route('/:videoId')
  *       400:
  *         description: Bad request
  */
-videoRouter.route('/:videoId').post(verifyJWT,validation.videoId,getVideoDetails)
+videoRouter.route('/:videoId').get(validation.videoId,getVideoDetails)
           
 /**
  * @swagger

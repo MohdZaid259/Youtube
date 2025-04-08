@@ -16,7 +16,7 @@ commentRouter.use(verifyJWT)
 
 /**
  * @swagger
- * /comment/{videoId}:
+ * /comment/v/{videoId}:
  *   post:
  *     summary: Add a new comment to a video.
  *     tags: [Comment]
@@ -70,7 +70,7 @@ commentRouter.use(verifyJWT)
  *       400:
  *         description: Invalid video ID.
  */
-commentRouter.route('/:videoId')
+commentRouter.route('/v/:videoId')
             .post(validation.commentContent, addComment)
             .get(validation.videoId, getComments)
 

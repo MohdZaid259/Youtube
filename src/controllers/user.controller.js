@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import userService from "../services/user.service.js";
+import mongoose from "mongoose";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -322,8 +323,6 @@ const updateWatchHistory = asyncHandler( async(req,res) => {
 
 const getChannelProfile = asyncHandler(async (req, res) => {
   const { data } = req.params;
-  
-  console.log('data ',data)
 
   if (!data?.trim()) {
     throw new ApiError(400, "username or userId is missing!");
@@ -332,16 +331,14 @@ const getChannelProfile = asyncHandler(async (req, res) => {
   let condition = {};
 
   if (data.match(/^[0-9a-fA-F]{24}$/)) {
-      condition = { _id: new mongoose.Types.ObjectId(data) };
+    condition = { _id: new mongoose.Types.ObjectId(data) };
   } else {
-      condition = { username: data.toLowerCase() };
+    condition = { username: data.toLowerCase() };
   }
-
-  console.log('condition ',condition)
 
   const channel = await User.aggregate([ 
     {
-      $match: { condition },
+      $match: condition,
     },
     {
       $lookup: {

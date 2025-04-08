@@ -1,7 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js"
-import mongoose, { isValidObjectId } from "mongoose";
+import { isValidObjectId } from "mongoose";
 import videoService from '../services/video.service.js'
 import { Video } from "../models/video.model.js";
 
@@ -13,7 +13,7 @@ const uploadVideo = asyncHandler( async(req,res) => {
   // create video object entry in db
   // return response
 
-  const {title, description, views, isPublished} = req.body
+  const {title, description, views=0, isPublished=true} = req.body
 
   const videoFileLocalPath = req.files?.videoFile[0]?.path
   const thumbnailLocalPath = req.files?.thumbnail[0]?.path

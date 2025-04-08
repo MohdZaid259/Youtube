@@ -14,9 +14,9 @@ const likeRouter = Router()
 
 likeRouter.use(verifyJWT)
 
-/**
+/*-*
  * @swagger
- * /like/{videoId}:
+ * /like/v/{videoId}:
  *   post:
  *     summary: Toggle like for a video.
  *     tags: [Like]
@@ -33,11 +33,11 @@ likeRouter.use(verifyJWT)
  *       400:
  *         description: Invalid video ID.
  */
-likeRouter.route('/:videoId').post(validation.videoId, toggleVideoLike)
+likeRouter.route('v/:videoId').post(validation.videoId, toggleVideoLike)
 
 /**
  * @swagger
- * /like/{commentId}:
+ * /like/c/{commentId}:
  *   post:
  *     summary: Toggle like for a comment.
  *     tags: [Like]
@@ -54,11 +54,11 @@ likeRouter.route('/:videoId').post(validation.videoId, toggleVideoLike)
  *       400:
  *         description: Invalid comment ID.
  */
-likeRouter.route('/:commentId').post(validation.commentId, toggleCommentLike)
+likeRouter.route('c/:commentId').post(validation.commentId, toggleCommentLike)
 
 /**
  * @swagger
- * /like/{replyId}:
+ * /like/r/{replyId}:
  *   post:
  *     summary: Toggle like for a reply.
  *     tags: [Like]
@@ -75,7 +75,7 @@ likeRouter.route('/:commentId').post(validation.commentId, toggleCommentLike)
  *       400:
  *         description: Invalid reply ID.
  */
-likeRouter.route('/:replyId').post(validation.replyId, toggleReplyLike)
+likeRouter.route('r/:replyId').post(validation.replyId, toggleReplyLike)
 
 /**
  * @swagger

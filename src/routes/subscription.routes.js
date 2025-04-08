@@ -16,7 +16,7 @@ subscriptionRouter.use(verifyJWT)
 
 /**
  * @swagger
- * /subscriptions/{channelId}:
+ * /subscriptions/c/{channelId}:
  *   post:
  *     summary: Toggle subscription for a channel.
  *     tags: [Subscriptions]
@@ -32,7 +32,7 @@ subscriptionRouter.use(verifyJWT)
  *         description: Successfully toggled subscription.
  *       400:
  *         description: Invalid channel ID.
- *  get:
+ *   get:
  *     summary: Get subscribers for a channel.
  *     tags: [Subscriptions]
  *     parameters:
@@ -47,12 +47,19 @@ subscriptionRouter.use(verifyJWT)
  *         description: List of channel subscribers.
  *       400:
  *         description: Invalid channel ID.
- *  get:
+ */
+subscriptionRouter.route('/c/:channelId').post(validation.channelId,toggleSubscription)
+                                      .get(validation.channelId,getChannelSubscribers)
+
+/**
+ * @swagger
+ * /subscriptions/u/{userId}:
+ *   get:
  *     summary: Get channels the user is subscribed to.
  *     tags: [Subscriptions]
  *     parameters:
  *       - in: path
- *         name: channelId
+ *         name: userId
  *         schema:
  *           type: string
  *         required: true
@@ -63,8 +70,6 @@ subscriptionRouter.use(verifyJWT)
  *       400:
  *         description: Invalid channel ID.
  */
-subscriptionRouter.route('/:channelId').post(validation.channelId,toggleSubscription)
-                                      .get(validation.channelId,getChannelSubscribers)
-                                      .get(validation.channelId,getSubscribedChannels)
+subscriptionRouter.route('/u/:userId').get(validation.channelId,getSubscribedChannels)
 
 export default subscriptionRouter
