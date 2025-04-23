@@ -6,7 +6,10 @@ const app = express()
 
 app.use(cors({ // setting cors
   // origin: process.env.CORS_ORIGIN,
-  origin: 'https://yt-frontend-three.vercel.app',
+  origin: [
+    'https://yt-frontend-three.vercel.app',
+    'http://localhost:3000',
+    ],
   credentials: true,
   // exposedHeaders: ["Set-cookie"] 
 }))
