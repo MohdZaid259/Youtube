@@ -134,53 +134,97 @@ const getVideoDetails = asyncHandler( async(req,res) => {
   )
 })
 
-const getAllVideos = asyncHandler( async(req,res) => {
+// const getAllVideos = asyncHandler( async(req,res) => {
+//   const page = 1;
+//   const limit = 15;
+//   const skip = (page - 1) * limit;
+
+//     const pipeline = [
+//       {
+//         $sort: { createdAt: -1 },
+//       },
+//       {
+//         $skip: skip,
+//       },
+//       {
+//         $limit: limit,
+//       },
+//       {
+//         $lookup: {
+//           from: 'users',
+//           localField: 'owner',
+//           foreignField: '_id',
+//           as: 'ownerDetails',
+//         }
+//       },
+//       {
+//         $unwind: {
+//           path: '$ownerDetails',
+//         }
+//       },
+//       {
+//         $project: {
+//           videoFile:1,
+//           thumbnail:1,
+//           duration:1,
+//           title: 1,
+//           description: 1,
+//           ownerName: '$ownerDetails.fullname',
+//           avatar: '$ownerDetails.avatar',
+//         },
+//       },
+//     ];
+
+//     const videos = await Video.aggregate(pipeline);
+
+//     res.status(200).json(
+//       new ApiResponse(200,videos,'Videos fetched successfully!')
+//     )
+// })
+
+const getAllVideos = asyncHandler(async (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
   const page = 1;
   const limit = 15;
   const skip = (page - 1) * limit;
 
-    const pipeline = [
-      {
-        $sort: { createdAt: -1 },
+  const pipeline = [
+    { $sort: { createdAt: -1 } },
+    { $skip: skip },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'owner',
+        foreignField: '_id',
+        as: 'ownerDetails',
+      }
+    },
+    { $unwind: { path: '$ownerDetails' } },
+    {
+      $project: {
+        videoFile: 1,
+        thumbnail: 1,
+        duration: 1,
+        title: 1,
+        description: 1,
+        ownerName: '$ownerDetails.fullname',
+        avatar: '$ownerDetails.avatar',
       },
-      {
-        $skip: skip,
-      },
-      {
-        $limit: limit,
-      },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'owner',
-          foreignField: '_id',
-          as: 'ownerDetails',
-        }
-      },
-      {
-        $unwind: {
-          path: '$ownerDetails',
-        }
-      },
-      {
-        $project: {
-          videoFile:1,
-          thumbnail:1,
-          duration:1,
-          title: 1,
-          description: 1,
-          ownerName: '$ownerDetails.fullname',
-          avatar: '$ownerDetails.avatar',
-        },
-      },
-    ];
+    },
+  ];
 
-    const videos = await Video.aggregate(pipeline);
+  const videos = await Video.aggregate(pipeline);
 
-    res.status(200).json(
-      new ApiResponse(200,videos,'Videos fetched successfully!')
-    )
-})
+  for (const video of videos) {
+    res.write(`data: ${JSON.stringify(video)}\n\n`);
+  }
+
+  res.end();
+});
 
 const togglePublish = asyncHandler( async(req,res) => {
   const { videoId } = req.params
