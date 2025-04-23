@@ -5,7 +5,8 @@ import cookieParser from 'cookie-parser'
 const app = express()
 
 app.use(cors({ // setting cors
-  origin: process.env.CORS_ORIGIN,
+  // origin: process.env.CORS_ORIGIN,
+  origin: 'https://yt-frontend-three.vercel.app',
   credentials: true,
   // exposedHeaders: ["Set-cookie"] 
 }))
